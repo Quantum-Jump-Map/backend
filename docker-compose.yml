@@ -63,9 +63,9 @@ services:
     command: >
       "certbot certonly --webroot
       --webroot-path=/var/www/certbot
-      --email your@email.com
+      --email your@email.com    # 내가 사용하는 이메일 추가
       --agree-tos --no-eff-email
-      -d yourdomain.com"
+      -d yourdomain.com"  # 여기에 우리가 사용할 도메인 추가
 
 volumes:
   user_data:
