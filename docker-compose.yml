@@ -1,15 +1,16 @@
 version: '3.8'
 
 services:
-  reverse-proxy:   # 외부에서 내부 네트워크로 접속하게 할 수 있는 기능
+  reverse-proxy:
     image: nginx:stable
     container_name: reverse-proxy
     ports:
-      - "443:443"  # 외부에서 443번 포트로 접근 가능
-      - "80:80" # http 프로토콜로 접속했을 때 redirection 용도
+      - "80:80"       # HTTP → HTTPS 리디렉션 및 certbot 인증용
+      - "443:443"     # HTTPS 트래픽
     volumes:
       - ./nginx/conf:/etc/nginx/conf.d
       - ./certs:/etc/letsencrypt
+      - ./nginx/html:/var/www/certbot
     depends_on:
       - api-server
     restart: always
@@ -18,7 +19,7 @@ services:
     build: ./server
     container_name: api-server
     expose:
-      - "3000"  # 내부에서만 3000번 포트로 접근 가능
+      - "3000"        # 내부 통신 전용 포트
     env_file:
       - .env
     depends_on:
@@ -29,28 +30,42 @@ services:
   user-db:
     image: mysql:8
     container_name: user-db
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: user_db
     expose:
-      - "3306"  # 내부에서만 3306번 포트로 접근 가능
+      - "3306"
     volumes:
       - user_data:/var/lib/mysql
       - ./db/user/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
 
   app-db:
     image: mysql:8
     container_name: app-db
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: app_db
     expose:
-      - "3306"  # 내부에서만 3306번 포트로 접근 가능
+      - "3306"
     volumes:
       - app_data:/var/lib/mysql
       - ./db/app/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./nginx/html:/var/www/certbot
+    entrypoint: "/bin/sh -c"
+    command: >
+      "certbot certonly --webroot
+      --webroot-path=/var/www/certbot
+      --email your@email.com
+      --agree-tos --no-eff-email
+      -d yourdomain.com"
 
 volumes:
   user_data:
