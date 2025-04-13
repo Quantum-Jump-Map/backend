@@ -1,9 +1,31 @@
 -- db/app/init.sql
+CREATE TABLE IF NOT EXISTS cities (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS districts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  city_id INT NOT NULL,
+  UNIQUE(name, city_id),
+  FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+CREATE TABLE IF NOT EXISTS roads (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  district_id INT NOT NULL,
+  UNIQUE(name, district_id),
+  FOREIGN KEY (district_id) REFERENCES districts(id)
+);
+
 CREATE TABLE IF NOT EXISTS comments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id VARCHAR(50) NOT NULL,
   content TEXT NOT NULL,
   posted_at DATETIME NOT NULL,
-  road_name VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  road_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (road_id) REFERENCES roads(id)
 );
