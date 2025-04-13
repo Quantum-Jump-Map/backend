@@ -1,0 +1,9 @@
+-- db/app/init.sql
+CREATE TABLE IF NOT EXISTS comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  posted_at DATETIME NOT NULL,
+  road_name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
