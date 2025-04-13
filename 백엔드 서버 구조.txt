@@ -1,0 +1,98 @@
+#백엔드 서버 구조
+
+- Docker 을 이용해 각 프로그램의 프로세스를 용도에 따라 격리함
+- 현재 구성하고 있는 서버 구조:
+
+Quantum-jump
+ |---nginx
+ |---certbot
+ |---처리서버(server.js)
+ |---DB1(댓글 및 주소 관련)
+ |    |---댓글 TABLE
+ |    |---cities TABLE (서울시, 부산시 등)
+ |    |---districts TABLE(광진구, 노원구, 해운대구 등등)
+ |    |---roads TABLE (구의강변로 등등)
+ |
+ |---DB2(사용자 정보 저장)
+      |--- 사용자 TABLE
+
+- 위의 구조를 쉽게 구성하기 위해 Docker-compose 를 사용함.
+- 처리서버는 이미지를 통해 만드는것이 아니기 때문에 build 필수 --> Dockerfile 형식 이용
+
+#DB1 구성 요소
+
+-댓글 TABLE
+
+CREATE TABLE IF NOT EXISTS comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  posted_at DATETIME NOT NULL,
+  road_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (road_id) REFERENCES roads(id)
+);
+
+-cities TABLE
+
+CREATE TABLE IF NOT EXISTS cities (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+);
+
+-districts TABLE
+
+CREATE TABLE IF NOT EXISTS districts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  city_id INT NOT NULL,
+  UNIQUE(name, city_id),
+  FOREIGN KEY (city_id) REFERENCES cities(id)
+);
+
+-roads TABLE
+
+CREATE TABLE IF NOT EXISTS roads (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  district_id INT NOT NULL,
+  UNIQUE(name, district_id),
+  FOREIGN KEY (district_id) REFERENCES districts(id)
+);
+
+- DB2 는 아직 미정이나 TABLE 에 포함될 항목(수정 필요):
+ - 사용자 이름
+ - 사용자 ID
+ - 사용자 비밀번호(hashed)
+ - 순번
+ - 성별
+ - 이메일
+
+- 처리 서버: json 파일을 처리하는 서버.
+- 처리하는 용도(종류)에 따라 처리 파일을 분산함 (회원가입 파일, 댓글 올리기 파일.. 등등)
+- 처리 종류는: 회원가입, 회원탈퇴, 댓글 올리기, 댓글 수정하기, 댓글 지우기, 댓글 가져오기 요청이 있고, 추후 추가 예정
+
+- 회원 가입 내용: 이름, 성별, 아이디, 비밀번호, 이메일 기재
+- 회원 탈퇴 내용: 회원 정보 지우기 요청
+- 댓글 올리기 요청: 아이디, 댓글 내용, city, district, road, 시간
+- 댓글 수정 요청: 아이디, 수정할 원본 댓글, 수정 내용, 시간
+- 댓글 지우기 요청: 아이디, 지울 원본 댓글
+
+================================================
+#백엔드 테스트 서버
+ - 구축 이유: 아직 도메인이 없기 때문에 reverse-proxy 를 구축할 필요가 없고, https 인증서도 필요 없음.
+
+- 테스트 서버 구조:
+
+Quantum-jump-test
+ |---처리서버(server.js)
+ |---DB1(댓글 및 주소 관련)
+ |    |---댓글 TABLE
+ |    |---cities TABLE (서울시, 부산시 등)
+ |    |---districts TABLE(광진구, 노원구, 해운대구 등등)
+ |    |---roads TABLE (구의강변로 등등)
+ |
+ |---DB2(사용자 정보 저장)
+      |--- 사용자 TABLE
+
+- DB 내용은 동일함.
