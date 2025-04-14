@@ -1,4 +1,3 @@
--- db/app/init.sql
 CREATE TABLE IF NOT EXISTS cities (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE
@@ -20,12 +19,20 @@ CREATE TABLE IF NOT EXISTS roads (
   FOREIGN KEY (district_id) REFERENCES districts(id)
 );
 
+CREATE TABLE IF NOT EXISTS buildings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  number VARCHAR(20) NOT NULL,
+  road_id INT NOT NULL,
+  UNIQUE(number, road_id),
+  FOREIGN KEY (road_id) REFERENCES roads(id)
+);
+
 CREATE TABLE IF NOT EXISTS comments (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id VARCHAR(50) NOT NULL,
   content TEXT NOT NULL,
   posted_at DATETIME NOT NULL,
-  road_id INT NOT NULL,
+  building_id INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (road_id) REFERENCES roads(id)
+  FOREIGN KEY (building_id) REFERENCES buildings(id)
 );
