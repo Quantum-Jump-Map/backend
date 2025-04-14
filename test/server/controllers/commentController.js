@@ -1,4 +1,4 @@
-import db from '../db/connection.js';
+import db from '../db/appDb.js';
 
 async function getOrCreateAddress(city, district, road_name, building_number) {
   const [cityRows] = await db.query(`SELECT id FROM cities WHERE name = ?`, [city]);

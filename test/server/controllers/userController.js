@@ -1,4 +1,4 @@
-import db from '../db/connection.js';
+import db from '../db/userDb.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
