@@ -21,6 +21,11 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Health check 엔드포인트
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
 // 메모리 데이터베이스 (MySQL 대체)
 const db = {
   users: [],
@@ -472,6 +477,26 @@ app.post('/comments/:commentId/reaction', [
 
 // 서버 시작
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
+}).on('error', (err) => {
+  console.error('서버 시작 오류:', err);
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM 신호를 받았습니다. 서버를 종료합니다...');
+  server.close(() => {
+    console.log('서버가 종료되었습니다.');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT 신호를 받았습니다. 서버를 종료합니다...');
+  server.close(() => {
+    console.log('서버가 종료되었습니다.');
+    process.exit(0);
+  });
 }); 
