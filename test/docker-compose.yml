@@ -9,8 +9,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - app-db-test
-      - user-db-test
+      - app-db
+      - user-db
 
   app-db:
     image: mysql:8
