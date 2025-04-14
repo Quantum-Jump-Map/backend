@@ -66,3 +66,11 @@ export async function createComment(req, res) {
     res.status(500).json({ error: '서버 오류' });
   }
 }
+
+export const getComments = (req, res) => {         //더미함수수
+  res.json([
+    { id: 1, content: '더미 댓글입니다', user_id: 'tester' },
+    { id: 2, content: 'API 연결 테스트 중', user_id: 'dev' }
+  ]);
+};
+
