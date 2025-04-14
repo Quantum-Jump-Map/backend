@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import commentRoutes from './routes/comments.js';
-import userRoutes from '.routes/users.js';
+import userRoutes from './routes/users.js';
 
 dotenv.config();
 const app = express();
