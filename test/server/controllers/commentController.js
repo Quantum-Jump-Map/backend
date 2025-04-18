@@ -67,10 +67,16 @@ export async function createComment(req, res) {
   }
 }
 
-export const getComments = (req, res) => {         //더미함수수
-  res.json([
-    { id: 1, content: '더미 댓글입니다', user_id: 'tester' },
-    { id: 2, content: 'API 연결 테스트 중', user_id: 'dev' }
-  ]);
-};
+export async function deleteComment(req, res) {   //댓글 지우기
+  
+}
+
+export async function editComment(req, res) {  //댓글 수정하기
+
+}
+
+export async function likeComment(req, res) {  //댓글 지우기
+
+}
+
 
