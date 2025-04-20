@@ -86,3 +86,100 @@ export async function loginUser(req, res) {
     res.status(500).json({ error: '서버 오류' });
   }
 }
+
+export async function editUser(req, res){   //사용자 정보 수정
+  const {username, password, new_password, email,
+    birth_date, gender} = req.body;
+
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
+
+    if(rows.length==0) {
+      return res.status(400).json( {error: '존재하지 않는 아이디'});
+    } 
+
+    const user = rows[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(!isMatch) {
+      return res.status(400).json({ error: '잘못된 비밀번호'});
+    }
+
+    const new_hashed_password = await bcrypt.hash(new_password);
+
+    await db.query('UPDATE users SET password=?, email=?, birth_date=?, gender=? WHERE id=?',
+      [new_hashed_password, email, birth_date, gender, user.id]);
+
+    res.status(200).json({message: '회원 정보 수정 완료'});
+  
+    } catch (err){
+        console.error("오류: ", err);
+        res.status(500).json({error: '오류 발생'});
+    }
+}
+
+
+export async function deleteUser(req, res) {    //사용자 정보 삭제 (는 수정 예정)
+  const {username, password} = req.body;
+
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
+
+    if(rows.length==0) {
+      return res.status(400).json( {error: '존재하지 않는 아이디'});
+    } 
+
+    const user = rows[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if(!isMatch) {
+      return res.status(400).json({ error: '잘못된 비밀번호'});
+    }
+
+
+    await db.query('DELTE FROM users where id=?', [user.id]);
+
+    res.status(200).json({message: '회원 정보 삭제제 완료'});
+  
+    } catch (err){
+        console.error("오류: ", err);
+        res.status(500).json({error: '오류 발생'});
+    }
+}
+
+
+export async function getUser(req, res) {
+
+  const {username, req_password} = req.body;
+
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
+
+    if(rows.length==0) {
+      return res.status(400).json( {error: '존재하지 않는 아이디'});
+    } 
+
+    const user = rows[0];
+
+    const isMatch = await bcrypt.compare(req_password, user.password);
+
+    if(!isMatch) {
+      return res.status(400).json({ error: '잘못된 비밀번호'});
+    }
+
+    res.status(200).json({
+      id: user.username,
+      password: req_password,
+      name: user.name,
+      email: user.email,
+      birth_date: user.birth_date,
+      gender: user.gender
+     });
+  
+    } catch (err){
+        console.error("오류: ", err);
+        res.status(500).json({error: '오류 발생'});
+    }
+}
