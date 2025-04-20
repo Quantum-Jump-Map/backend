@@ -6,11 +6,13 @@ import {
   likeComment,
 } from '../controllers/commentController.js';
 
+import { CheckAndRemakeToken } from '../JWT/middleware.js';
+
 const router = express.Router();
 
-router.post('/createComment', createComment);   // POST 댓글 만들기
-router.delete('/deleteComment', deleteComment);   // DELETE 댓글 지우기
-router.patch('/editComment', editComment);
-router.patch('/likeComment', likeComment);
+router.post('/createComment', CheckAndRemakeToken, createComment);   // POST 댓글 만들기
+router.delete('/deleteComment', CheckAndRemakeToken, deleteComment);   // DELETE 댓글 지우기
+router.patch('/editComment', CheckAndRemakeToken, editComment);
+router.post('/likeComment', CheckAndRemakeToken, likeComment);
 
 export default router;

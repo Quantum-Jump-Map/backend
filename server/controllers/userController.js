@@ -2,6 +2,7 @@ import db from '../db/userDb.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { makeToken } from '../JWT/token.js';
 
 dotenv.config();
 
@@ -63,11 +64,7 @@ export async function loginUser(req, res) {
     }
 
     // JWT 발급
-    const token = jwt.sign(
-      { id: user.id, username: user.username },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
+    const token = makeToken(user);
 
     res.status(200).json({
       message: '로그인 성공',
@@ -106,12 +103,15 @@ export async function editUser(req, res){   //사용자 정보 수정
       return res.status(400).json({ error: '잘못된 비밀번호'});
     }
 
-    const new_hashed_password = await bcrypt.hash(new_password);
+    const new_hashed_password = password || await bcrypt.hash(new_password);
 
     await db.query('UPDATE users SET password=?, email=?, birth_date=?, gender=? WHERE id=?',
       [new_hashed_password, email, birth_date, gender, user.id]);
 
-    res.status(200).json({message: '회원 정보 수정 완료'});
+    res.status(200).json({
+      token: res.locals.newToken,
+      message: '회원 정보 수정 완료'
+    });
   
     } catch (err){
         console.error("오류: ", err);

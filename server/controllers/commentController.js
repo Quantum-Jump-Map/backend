@@ -65,7 +65,10 @@ export async function createComment(req, res) {
       [user_id, content, posted_at, buildingId]
     );
 
-    res.status(201).json({ message: '댓글 저장 완료' });
+    res.status(201).json({ 
+      token: res.locals.newToken,
+      message: '댓글 저장 완료' });
+
   } catch (err) {
     console.error('댓글 저장 실패:', err);
     res.status(500).json({ error: '서버 오류' });
@@ -94,9 +97,11 @@ export async function deleteComment(req, res) {
     await db.execute('DELETE FROM comments WHERE id = ?', [comment_id]);
 
     res.status(200).json({
+      token: res.locals.newToken,
       message: '댓글이 삭제되었습니다.',
       deleted_id: comment_id
     });
+
   } catch (err) {
     console.error('오류', err);
     res.status(500).json({ message: '서버 오류' });
@@ -122,6 +127,7 @@ export async function editComment(req, res) {
     await db.execute('UPDATE comments SET content = ? WHERE id = ?', [new_contents, comment_id]);
 
     res.status(200).json({
+      token: res.locals.newToken,
       message: '댓글 수정 완료',
       comment: {
         id: comment_id,
@@ -130,6 +136,7 @@ export async function editComment(req, res) {
         posted_at: cur_comment.created_at
       }
     });
+    
   } catch (err) {
     console.error('오류', err);
     res.status(500).json({ message: '서버 오류' });

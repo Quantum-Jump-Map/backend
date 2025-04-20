@@ -1,13 +1,14 @@
 import express from 'express';
 import { registerUser, loginUser, editUser, 
     deleteUser, getUser } from '../controllers/userController.js';
+import { CheckAndRemakeToken } from '../JWT/middleware.js';
 
 const router = express.Router();
 
 router.post('/register', registerUser); // POST /users/register
-router.post('/loginUser', loginUser);       // POST /users/login
-router.post('/editUser', editUser);
-router.post('/deleteUser', deleteUser);
-router.post('/getUser', getUser);
+router.post('/loginUser', CheckAndRemakeToken, loginUser);       // POST /users/login
+router.patch('/editUser', CheckAndRemakeToken, editUser);
+router.delete('/deleteUser', deleteUser);
+router.get('/getUser', CheckAndRemakeToken, getUser);
 
 export default router;
