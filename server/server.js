@@ -2,13 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import commentRoutes from './routes/comments.js';
 import userRoutes from './routes/users.js';
-import cors from 'cors';
-
 //import locationRoutes from './routes/location.js';
 
 dotenv.config();
 const app = express();
-app.use(cors());
 app.use(express.json());
 
 // 라우터 연결
