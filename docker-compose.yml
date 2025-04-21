@@ -11,6 +11,9 @@ services:
     depends_on:
       - app-db
       - user-db
+    volumes:
+      - ./server:/app
+      - /app/node_modules
 
   app-db:
     image: mysql:8
