@@ -1,6 +1,5 @@
 import db from '../db/userDb.js';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { makeToken } from '../JWT/token.js';
 
@@ -67,16 +66,8 @@ export async function loginUser(req, res) {
     const token = makeToken(user);
 
     res.status(200).json({
-      message: '로그인 성공',
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        name: user.name,
-        email: user.email,
-        birth_date: user.birth_date,
-        gender: user.gender
-      }
+      token: res.locals.newToken,
+      message: '로그인 성공'
     });
   } catch (err) {
     console.error('로그인 오류:', err);
@@ -85,8 +76,10 @@ export async function loginUser(req, res) {
 }
 
 export async function editUser(req, res){   //사용자 정보 수정
-  const {username, password, new_password, email,
+  const {password, new_password, email,
     birth_date, gender} = req.body;
+  
+  const username = req.user.username;
 
   try {
     const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
@@ -99,11 +92,11 @@ export async function editUser(req, res){   //사용자 정보 수정
 
     const isMatch = await bcrypt.compare(password, user.password);
 
-    if(!isMatch) {
+    if(!isMatch || req.user.id != user.id) {
       return res.status(400).json({ error: '잘못된 비밀번호'});
     }
 
-    const new_hashed_password = password || await bcrypt.hash(new_password);
+    const new_hashed_password = bcrypt.hash(new_password=='' ? password: new_password);
 
     await db.query('UPDATE users SET password=?, email=?, birth_date=?, gender=? WHERE id=?',
       [new_hashed_password, email, birth_date, gender, user.id]);
@@ -152,7 +145,8 @@ export async function deleteUser(req, res) {    //사용자 정보 삭제 (는 �
 
 export async function getUser(req, res) {
 
-  const {username, req_password} = req.body;
+  const {req_password} = req.user;
+  username = req.user.username;
 
   try {
     const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
@@ -165,17 +159,20 @@ export async function getUser(req, res) {
 
     const isMatch = await bcrypt.compare(req_password, user.password);
 
-    if(!isMatch) {
+    if(!isMatch || req.user.id != user.id) {
       return res.status(400).json({ error: '잘못된 비밀번호'});
     }
 
     res.status(200).json({
-      id: user.username,
-      password: req_password,
-      name: user.name,
-      email: user.email,
-      birth_date: user.birth_date,
-      gender: user.gender
+      token: res.locals.newToken,
+      user: {
+        id: user.username,
+        password: req_password,
+        name: user.name,
+        email: user.email,
+        birth_date: user.birth_date,
+        gender: user.gender
+      }
      });
   
     } catch (err){
