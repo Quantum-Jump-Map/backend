@@ -1,9 +1,12 @@
 import db from '../db/appDb.js';
 import userdb from '../db/userDb.js';
+import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
 
 async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
+  const ret_address = CoordToAddress(latitude, longitude);
 
+  
   
 }
 
