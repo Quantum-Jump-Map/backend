@@ -1,66 +1,22 @@
 import db from '../db/appDb.js';
 import userdb from '../db/userDb.js';
 
-async function getOrCreateAddress(city, district, road_name, building_number) {
-  const [cityRows] = await db.query('SELECT id FROM cities WHERE name = ?', [city]);
-  let cityId = cityRows[0]?.id;
-  if (!cityId) {
-    const [res] = await db.query('INSERT INTO cities (name) VALUES (?)', [city]);
-    cityId = res.insertId;
-  }
+async function getOrCreateAddress(latitude, longitude) {
+  //1. 좌표를 주소로 변환하기
 
-  const [districtRows] = await db.query(
-    'SELECT id FROM districts WHERE name = ? AND city_id = ?',
-    [district, cityId]
-  );
-  let districtId = districtRows[0]?.id;
-  if (!districtId) {
-    const [res] = await db.query(
-      'INSERT INTO districts (name, city_id) VALUES (?, ?)',
-      [district, cityId]
-    );
-    districtId = res.insertId;
-  }
-
-  const [roadRows] = await db.query(
-    'SELECT id FROM roads WHERE name = ? AND district_id = ?',
-    [road_name, districtId]
-  );
-  let roadId = roadRows[0]?.id;
-  if (!roadId) {
-    const [res] = await db.query(
-      'INSERT INTO roads (name, district_id) VALUES (?, ?)',
-      [road_name, districtId]
-    );
-    roadId = res.insertId;
-  }
-
-  const [buildingRows] = await db.query(
-    'SELECT id FROM buildings WHERE number = ? AND road_id = ?',
-    [building_number, roadId]
-  );
-  let buildingId = buildingRows[0]?.id;
-  if (!buildingId) {
-    const [res] = await db.query(
-      'INSERT INTO buildings (number, road_id) VALUES (?, ?)',
-      [building_number, roadId]
-    );
-    buildingId = res.insertId;
-  }
-
-  return buildingId;
+  
 }
 
 export async function createComment(req, res) {
-  const { content, posted_at, city, district, road_name, building_number } = req.body;
+  const { content, posted_at, latitude, longitude } = req.body;
   const user_id = req.user.id
 
-  if (!user_id || !content || !posted_at || !city || !district || !road_name || !building_number) {
+  if (!content || !posted_at || !latitude || !longitude) {
     return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
   }
 
   try {
-    const buildingId = await getOrCreateAddress(city, district, road_name, building_number);
+    const buildingId = await getOrCreateAddress(latitude, longitude);
     await db.execute(
       'INSERT INTO comments (user_id, content, posted_at, building_id) VALUES (?, ?, ?, ?)',
       [user_id, content, posted_at, buildingId]
