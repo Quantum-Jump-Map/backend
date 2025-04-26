@@ -4,7 +4,7 @@ const KakaoAPI = axios.create({
     baseURL: 'https://dapi.kakao.com/v2/local',
     timeout: 5000,
     headers: {
-        Authorization: `KakaoAK ${KakaoAK}`
+        Authorization: `KakaoAK ${process.env.KakaoAK}`
     }
 });
 

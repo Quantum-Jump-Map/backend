@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS cities (  -- 시/도
   id INT AUTO_INCREMENT PRIMARY KEY,
-  lat DOUBLE NOT NULL, --y
-  lng DOUBLE NOT NULL, --x
+  lat DOUBLE NOT NULL,
+  lng DOUBLE NOT NULL,
   name VARCHAR(100) NOT NULL UNIQUE
 );
 
@@ -27,12 +27,12 @@ CREATE TABLE IF NOT EXISTS roads (  -- 도로명
   FOREIGN KEY (district_id) REFERENCES districts(id)
 );
 
-CREATE TABLE IF NOT EXISTS addresses (  -- 주소
+CREATE TABLE IF NOT EXISTS addresses ( -- 주소
   id INT AUTO_INCREMENT PRIMARY KEY,
   road_id INT NOT NULL,
   city_id INT NOT NULL,
   district_id INT NOT NULL,
-  building_num VARCHAR(10) NOT NULL,  --통합
+  building_num VARCHAR(10) NOT NULL, 
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
   FOREIGN KEY (road_id) REFERENCES roads(id),
@@ -41,17 +41,15 @@ CREATE TABLE IF NOT EXISTS addresses (  -- 주소
   UNIQUE (road_id, city_id, district_id, building_num)
 );
 
-CREATE TABLE IF NOT EXISTS comments (  -- 댓글
+CREATE TABLE IF NOT EXISTS comments ( --댓글
   id INT AUTO_INCREMENT PRIMARY KEY,
   address_id INT NOT NULL,
   user_id INT NOT NULL,
   content TEXT NOT NULL,
   is_anonymous BOOLEAN DEFAULT FALSE,
-  --clicked_lat DOUBLE,
-  --clicked_lng DOUBLE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
-  FOREIGN KEY (address_id) REFERENCES addresses(id),
+  FOREIGN KEY (address_id) REFERENCES addresses(id)
   --FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -61,6 +59,6 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   user_id INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (comment_id, user_id),
-  FOREIGN KEY (comment_id) REFERENCES comments(id),
+  FOREIGN KEY (comment_id) REFERENCES comments(id)
   --FOREIGN KEY (user_id) REFERENCES users(id)
 );
