@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS addresses ( -- 주소
   UNIQUE (road_id, city_id, district_id, building_num)
 );
 
-CREATE TABLE IF NOT EXISTS comments ( --댓글
+CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   id INT AUTO_INCREMENT PRIMARY KEY,
   address_id INT NOT NULL,
   user_id INT NOT NULL,
