@@ -6,7 +6,7 @@ import { CheckAndRemakeToken } from '../JWT/middleware.js';
 const router = express.Router();
 
 router.post('/register', registerUser); // POST /users/register
-router.post('/loginUser', CheckAndRemakeToken, loginUser);       // POST /users/login
+router.get('/loginUser', loginUser);       // POST /users/login
 router.patch('/editUser', CheckAndRemakeToken, editUser);
 router.delete('/deleteUser', deleteUser);
 router.get('/getUser', CheckAndRemakeToken, getUser);
