@@ -11,7 +11,7 @@ export function makeToken(user)
         username: user.username
     };
 
-    return jwt.sign(payload, secretKey, timeOut);
+    return jwt.sign(payload, secretKey, {expiresIn: timeOut});
 }
 
 
