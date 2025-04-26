@@ -38,7 +38,7 @@ async function getOrCreateAddress(latitude, longitude) {
   if(roads_row.length==0)
   {
     const {x: road_x, y: road_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name}`);
-    const [res] = await db.query('INSERT INTO roads (name, city_id, district_id, lat, lng) VALUES(?,?,?,?)',[ret_address.road_name, city_id, district_id, road_y, road_x]);
+    const [res] = await db.query('INSERT INTO roads (name, city_id, district_id, lat, lng) VALUES(?,?,?,?,?)',[ret_address.road_name, city_id, district_id, road_y, road_x]);
     road_id = res.insertId;
   }
 
