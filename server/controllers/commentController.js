@@ -78,7 +78,7 @@ export async function createComment(req, res) {
 
     await db.execute(
       'INSERT INTO comments (user_id, content, address_id) VALUES (?, ?, ?)',
-      [user_id, content, posted_at, address_id]
+      [user_id, content, address_id]
     );
 
     res.status(201).json({ 
