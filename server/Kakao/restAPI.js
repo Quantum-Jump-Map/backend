@@ -1,58 +1,46 @@
 import axios from 'axios';
 
-const KakaoAPI = axios.create(
-    {
-        baseURL: 'https://dapi.kakao.com/v2/local',
-        timeout: 5000,
-        headers: {
-            Authorization: `KakaoAK ${KakaoAK}`
-        }
+const KakaoAPI = axios.create({
+    baseURL: 'https://dapi.kakao.com/v2/local',
+    timeout: 5000,
+    headers: {
+        Authorization: `KakaoAK ${KakaoAK}`
     }
-);
+});
 
-export async function CoordToAddress(lat, lng)
-{
-    try{
+export async function CoordToAddress(lat, lng) {
+    try {
         const res = await KakaoAPI.get('/geo/coord2address.json', {
-            params: {
-                x: lat,
-                y: lng
-            }
+            params: { x: lng, y: lat }
         });
 
-        const documents = res.data.documents[0];
-        
-        if(documents.length==0)
+        if (!res.data.documents.length)
             return null;
-    
-        return documents.road_address;
 
-    } catch(err) {
+        return res.data.documents[0].road_address;
+
+    } catch (err) {
         console.error("error", err);
         return null;
     }
 }
 
-export async function AddressToCoord(address)
-{
-    try{
+export async function AddressToCoord(address) {
+    try {
         const res = await KakaoAPI.get('/search/address.json', {
-            params: {
-                query: address
-            }
+            params: { query: address }
         });
 
-        const documents = res.data.documents[0];
-        
-        if(documents.length==0)
+        if (!res.data.documents.length)
             return null;
-    
+
+        const document = res.data.documents[0];
         return {
-            x: parseFloat(documents.x),
-            y: parseFloat(documents.y)
+            x: parseFloat(document.x),
+            y: parseFloat(document.y)
         };
 
-    } catch(err) {
+    } catch (err) {
         console.error("error", err);
         return null;
     }

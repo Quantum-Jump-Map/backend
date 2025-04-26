@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS cities (  -- 시/도
   id INT AUTO_INCREMENT PRIMARY KEY,
-  lat DOUBLE NOT NULL,
-  lng DOUBLE NOT NULL,
+  lat DOUBLE NOT NULL, --y
+  lng DOUBLE NOT NULL, --x
   name VARCHAR(100) NOT NULL UNIQUE
 );
 
@@ -18,22 +18,28 @@ CREATE TABLE IF NOT EXISTS districts (  -- 시/군/구
 CREATE TABLE IF NOT EXISTS roads (  -- 도로명
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  city_id INT NOT NULL,
   district_id INT NOT NULL,
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
-  UNIQUE(name, district_id),
+  UNIQUE(name, city_id, district_id),
+  FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id)
 );
 
 CREATE TABLE IF NOT EXISTS addresses (  -- 주소
   id INT AUTO_INCREMENT PRIMARY KEY,
   road_id INT NOT NULL,
-  building_main_num VARCHAR(10) NOT NULL,  //통합
-  building_main_num VARCHAR(10),
-  latitude DOUBLE NOT NULL,
-  longitude DOUBLE NOT NULL,
+  city_id INT NOT NULL,
+  district_id INT NOT NULL,
+  building_num VARCHAR(10) NOT NULL,  //통합
+  --building_main_num VARCHAR(10),
+  --lat DOUBLE NOT NULL,
+  --lng DOUBLE NOT NULL,
   FOREIGN KEY (road_id) REFERENCES roads(id),
-  UNIQUE (road_id, building_main_num, building_sub_num)
+  FOREIGN KEY (city_id) REFERENCES cities(id),
+  FOREIGN KEY (district_id) REFERENCES districts(id),
+  UNIQUE (road_id, city_id, district_id, building_num)
 );
 
 CREATE TABLE IF NOT EXISTS comments (  -- 댓글

@@ -4,10 +4,59 @@ import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
 
 async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
-  const ret_address = CoordToAddress(latitude, longitude);
+  const ret_address = await CoordToAddress(latitude, longitude);
 
+  //2. city 처리
+  const [cities_row] = await db.query('SELECT * FROM cities WHERE name=?', [ret_address.region_1depth_name]);
+  let city_id = cities_row[0]?.id;
+
+  if(cities_row.length==0)
+  {
+    const {x: city_x, y: city_y} = await AddressToCoord(`${ret_address.region_1depth_name}`);
+    const [res] = await db.query('INSERT INTO cities (name, lat, lng) VALUES(?,?,?)',[ret_address.region_1depth_name, city_y, city_x]);
+    city_id = res.insertId;
+  }
+
+  //3. district 처리
+  const [districts_row] = await db.query('SELECT * FROM districts WHERE city_id=? AND name=?', [city_id, ret_address.region_2depth_name]);
+  let district_id = districts_row[0]?.id;
+
+  if(districts_row.length==0)
+  {
+    const {x: district_x, y: district_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name}`);
+    const [res] = await db.query('INSERT INTO districts (name, city_id, lat, lng) VALUES(?,?,?,?)',[ret_address.region_2depth_name, city_id, district_y, district_x]);
+    district_id = res.insertId;
+  }
+
+  //4. roads 처리
   
-  
+  const [roads_row] = await db.query('SELECT * FROM roads WHERE district_id=? AND name=?', [district_id, ret_address.road_name]);
+  let road_id = roads_row[0]?.id;
+
+  if(roads_row.length==0)
+  {
+    const {x: road_x, y: road_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name}`);
+    const [res] = await db.query('INSERT INTO roads (name, city_id, district_id, lat, lng) VALUES(?,?,?,?)',[ret_address.road_name, city_id, district_id, road_y, road_x]);
+    road_id = res.insertId;
+  }
+
+  // 5. addresses 처리
+  let building_num = ret_address.main_building_no;
+  if(ret_address.sub_building_no!="")
+    building_num += `-${ret_address.sub_building_no}`;
+
+  const [addresses_row] = await db.query('SELECT * FROM addresses WHERE road_id=? AND building_num=?', [road_id, building_num]);
+  let address_id = addresses_row[0]?.id;
+
+  if(addresses_row.length==0)
+  {
+    const {x: address_x, y: address_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name} ${building_num}`);
+    const [res] = await db.query('INSERT INTO addresses (city_id, district_id, road_id, building_num, lat, lng) VALUES(?,?,?,?,?,?)',
+      [city_id, district_id, road_id, building_num, address_y, address_x]);
+    address_id = res.insertId;
+  }
+
+  return address_id;
 }
 
 export async function createComment(req, res) {
@@ -19,10 +68,10 @@ export async function createComment(req, res) {
   }
 
   try {
-    const buildingId = await getOrCreateAddress(latitude, longitude);
+    const address_id = await getOrCreateAddress(latitude, longitude);
     await db.execute(
-      'INSERT INTO comments (user_id, content, posted_at, building_id) VALUES (?, ?, ?, ?)',
-      [user_id, content, posted_at, buildingId]
+      'INSERT INTO comments (user_id, content, posted_at, address_id) VALUES (?, ?, ?, ?)',
+      [user_id, content, posted_at, address_id]
     );
 
     res.status(201).json({ 
