@@ -66,7 +66,7 @@ export async function loginUser(req, res) {
     const token = makeToken(user);
 
     res.status(200).json({
-      token: res.locals.newToken,
+      token: token,
       message: '로그인 성공'
     });
   } catch (err) {
