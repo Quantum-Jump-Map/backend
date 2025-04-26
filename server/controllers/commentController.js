@@ -5,6 +5,8 @@ import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
 async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
   const ret_address = await CoordToAddress(latitude, longitude);
+  if(ret_address===null)
+    return null;
 
   //2. city 처리
   const [cities_row] = await db.query('SELECT * FROM cities WHERE name=?', [ret_address.region_1depth_name]);
@@ -60,17 +62,22 @@ async function getOrCreateAddress(latitude, longitude) {
 }
 
 export async function createComment(req, res) {
-  const { content, posted_at, latitude, longitude } = req.body;
+  const { content, latitude, longitude } = req.body;
   const user_id = req.user.id
 
-  if (!content || !posted_at || !latitude || !longitude) {
+  if (!content || !latitude || !longitude) {
     return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
   }
 
   try {
     const address_id = await getOrCreateAddress(latitude, longitude);
+    if(address_id==null)
+      return res.status(500).json({
+        message: "error"
+      });
+
     await db.execute(
-      'INSERT INTO comments (user_id, content, posted_at, address_id) VALUES (?, ?, ?, ?)',
+      'INSERT INTO comments (user_id, content, address_id) VALUES (?, ?, ?)',
       [user_id, content, posted_at, address_id]
     );
 

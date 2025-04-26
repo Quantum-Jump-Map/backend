@@ -32,10 +32,9 @@ CREATE TABLE IF NOT EXISTS addresses (  -- 주소
   road_id INT NOT NULL,
   city_id INT NOT NULL,
   district_id INT NOT NULL,
-  building_num VARCHAR(10) NOT NULL,  //통합
-  --building_main_num VARCHAR(10),
-  --lat DOUBLE NOT NULL,
-  --lng DOUBLE NOT NULL,
+  building_num VARCHAR(10) NOT NULL,  --통합
+  lat DOUBLE NOT NULL,
+  lng DOUBLE NOT NULL,
   FOREIGN KEY (road_id) REFERENCES roads(id),
   FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id),
