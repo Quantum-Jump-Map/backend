@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
   FOREIGN KEY (address_id) REFERENCES addresses(id)
-  --FOREIGN KEY (user_id) REFERENCES users(id)
+  -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
@@ -60,5 +60,5 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (comment_id, user_id),
   FOREIGN KEY (comment_id) REFERENCES comments(id)
-  --FOREIGN KEY (user_id) REFERENCES users(id)
+  -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
