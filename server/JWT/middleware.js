@@ -7,6 +7,7 @@ export async function CheckAndRemakeToken(req, res, next) {
   const temp = req.headers.authorization;
 
   if (!temp || !temp.startsWith('Bearer ')) {
+    console.log("no token");
     return res.status(401).json({ message: "No Token" });
   }
 
