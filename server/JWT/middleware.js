@@ -3,7 +3,7 @@ import { makeToken } from './token.js';
 
 const secretKey = process.env.JWT_SECRET;
 
-export function CheckAndRemakeToken(req, res, next) {
+export async function CheckAndRemakeToken(req, res, next) {
   const temp = req.headers.authorization;
 
   if (!temp || !temp.startsWith('Bearer ')) {
@@ -16,7 +16,7 @@ export function CheckAndRemakeToken(req, res, next) {
     const decoded = jwt.verify(token, secretKey);
     req.user = decoded;
 
-    res.locals.newToken = makeToken(decoded);
+    res.locals.newToken = await makeToken(decoded);
 
     next();
   } catch (err) {
