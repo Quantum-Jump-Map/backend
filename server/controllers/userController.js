@@ -51,6 +51,7 @@ export async function loginUser(req, res) {
     // 사용자 조회
     const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
     if (rows.length === 0) {
+      console.log("no id Exists");
       return res.status(404).json({ error: '존재하지 않는 아이디입니다.' });
     }
 
@@ -59,11 +60,13 @@ export async function loginUser(req, res) {
     // 비밀번호 비교
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log("Wrong password");
       return res.status(401).json({ error: '비밀번호가 일치하지 않습니다.' });
     }
 
     // JWT 발급
-    const token = makeToken(user);
+    const token = await makeToken(user);
+    console.log("로그인 성공!");
 
     res.status(200).json({
       token: token,
@@ -85,6 +88,7 @@ export async function editUser(req, res){   //사용자 정보 수정
     const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
 
     if(rows.length==0) {
+      console.log("No user exists");
       return res.status(400).json( {error: '존재하지 않는 아이디'});
     } 
 
@@ -93,6 +97,7 @@ export async function editUser(req, res){   //사용자 정보 수정
     const isMatch = await bcrypt.compare(password, user.password);
 
     if(!isMatch || req.user.id != user.id) {
+      console.log("wrong password");
       return res.status(400).json({ error: '잘못된 비밀번호'});
     }
 
