@@ -66,15 +66,18 @@ export async function createComment(req, res) {
   const user_id = req.user.id
 
   if (!content || !latitude || !longitude) {
+    console.log("error1");
     return res.status(400).json({ error: '모든 필드를 입력해주세요.' });
   }
 
   try {
     const address_id = await getOrCreateAddress(latitude, longitude);
-    if(address_id==null)
+    if(address_id==null){
+      console.log("error2");
       return res.status(500).json({
         message: "error"
       });
+    }
 
     await db.execute(
       'INSERT INTO comments (user_id, content, address_id) VALUES (?, ?, ?)',
@@ -84,6 +87,8 @@ export async function createComment(req, res) {
     res.status(201).json({ 
       token: res.locals.newToken,
       message: '댓글 저장 완료' });
+
+    console.log("error3");
 
   } catch (err) {
     console.error('댓글 저장 실패:', err);
