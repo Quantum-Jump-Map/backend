@@ -33,7 +33,7 @@ export async function level1(req, res)  // 시도 단위
                 const [username] = await userdb.query('SELECT username from users WHERE id=?', [temp_comment[j].user_id]); //사용자 username 조회
                 comments_data.push({
                     comment: temp_comment[j].content,  //댓글 내용
-                    posted_by: username,  // username
+                    posted_by: username.username,  // username
                     posted_at: temp_comment[j].created_at, //생성시간
                     like_count: temp_comment[j].like_count //좋아요 개수
                 });
