@@ -58,6 +58,11 @@ async function getOrCreateAddress(latitude, longitude) {
     address_id = res.insertId;
   }
 
+  console.log(city_id);
+  console.log(district_id);
+  console.log(road_id);
+  console.log(address_id);
+  
   return {
     city_id: city_id,
     district_id: district_id,

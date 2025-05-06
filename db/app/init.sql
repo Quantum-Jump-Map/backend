@@ -48,14 +48,14 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   road_id INT NOT NULL,
   address_id INT NOT NULL,
   user_id INT NOT NULL,
-  content TEXT NOT NULL, -- 댓글글
+  content TEXT NOT NULL,  -- 댓글글
   is_anonymous BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
   FOREIGN KEY (address_id) REFERENCES addresses(id),
   FOREIGN KEY (road_id) REFERENCES roads(id),
   FOREIGN KEY (city_id) REFERENCES cities(id),
-  FOREIGN KEY (district_id) REFERENCES districts(id),
+  FOREIGN KEY (district_id) REFERENCES districts(id)
   -- dangerous INT NOT NULL
   -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
