@@ -6,11 +6,11 @@ import userdb from '../db/userDb.js';
 export async function level1(req, res)  // 시도 단위
 {
     try{
-        const {topleftx, toplefty, bottomrightx, bottomrighty} = req.body;
-        const t_topleftx = parseFloat(topleftx);
-        const t_toplefty = parseFloat(toplefty);
-        const t_bottomrightx = parseFloat(bottomrightx);
-        const t_bottomrighty = parseFloat(bottomrighty);
+        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        const t_topleftx = parseFloat(TopLeftX);
+        const t_toplefty = parseFloat(TopLeftY);
+        const t_bottomrightx = parseFloat(BottomRightX);
+        const t_bottomrighty = parseFloat(BottomRightY);
 
         const loc = await db.query('SELECT * from cities WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
