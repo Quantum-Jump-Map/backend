@@ -17,11 +17,12 @@ export async function level1(req, res)  // 시도 단위
 
 
         const loc_size = loc.length;   //좌표 안에 있는 위치의 개수
+        console.log("loc_size: " + loc_size);
         let data = [];
 
         for(let i =0; i<loc_size; i++)
         {
-            const [temp_comment] = await db.query('SELECT * from comments city_id=? ORDER BY like_comment LIMIT 2', [loc[i].id]); //댓글 조회
+            const [temp_comment] = await db.query('SELECT * from comments WHERE city_id=? ORDER BY like_comment LIMIT 2', [loc[i].id]); //댓글 조회
             const mapx = loc[i].lng;
             const mapy = loc[i].lat;
             const comments_size = temp_comment.length; //조회된 댓글 개수 (최대 2)
