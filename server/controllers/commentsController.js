@@ -58,7 +58,13 @@ async function getOrCreateAddress(latitude, longitude) {
     address_id = res.insertId;
   }
 
-  return address_id;
+  return {
+    city_id: city_id,
+    district_id: district_id,
+    road_id: road_id,
+    address_id: address_id
+  };
+
 }
 
 export async function createComment(req, res) {
@@ -70,15 +76,15 @@ export async function createComment(req, res) {
   }
 
   try {
-    const address_id = await getOrCreateAddress(latitude, longitude);
+    const {city_id, district_id, road_id, address_id} = await getOrCreateAddress(latitude, longitude);
     if(address_id==null)
       return res.status(500).json({
         message: "error"
       });
 
     await db.execute(
-      'INSERT INTO comments (user_id, content, address_id) VALUES (?, ?, ?)',
-      [user_id, content, address_id]
+      'INSERT INTO comments (user_id, content, city_id, district_id, road_id, address_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [user_id, content, city_id, district_id, road_id, address_id]
     );
 
     res.status(201).json({ 
