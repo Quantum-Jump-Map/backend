@@ -13,7 +13,7 @@ export async function level1(req, res)  // 시도 단위
         const t_bottomrighty = parseFloat(BottomRightY);
 
         const [loc] = await db.query('SELECT * from cities WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
-            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
+            [t_topleftx, t_bottomrightx, t_toplefty, t_bottomrighty]);
 
 
         const loc_size = loc.length;   //좌표 안에 있는 위치의 개수
