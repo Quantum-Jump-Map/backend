@@ -4,7 +4,7 @@ import {
   deleteComment,
   editComment,
   likeComment,
-} from '../controllers/commentController.js';
+} from '../controllers/commentsController.js';
 
 import { CheckAndRemakeToken } from '../JWT/middleware.js';
 
@@ -16,3 +16,4 @@ router.patch('/editComment', CheckAndRemakeToken, editComment);
 router.post('/likeComment', CheckAndRemakeToken, likeComment);
 
 export default router;
+

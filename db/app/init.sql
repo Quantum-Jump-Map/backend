@@ -45,11 +45,12 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   id INT AUTO_INCREMENT PRIMARY KEY,
   address_id INT NOT NULL,
   user_id INT NOT NULL,
-  content TEXT NOT NULL,
+  content TEXT NOT NULL, --댓글글
   is_anonymous BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
-  FOREIGN KEY (address_id) REFERENCES addresses(id)
+  FOREIGN KEY (address_id) REFERENCES addresses(id),
+  dangerous INT NOT NULL
   -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -62,3 +63,4 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   FOREIGN KEY (comment_id) REFERENCES comments(id)
   -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
