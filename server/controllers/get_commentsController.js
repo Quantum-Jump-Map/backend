@@ -12,22 +12,22 @@ export async function level1(req, res)  // 시도 단위
         const t_bottomrightx = parseFloat(BottomRightX);
         const t_bottomrighty = parseFloat(BottomRightY);
 
-        const loc = await db.query('SELECT * from cities WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
+        const [loc] = await db.query('SELECT * from cities WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
 
         const loc_size = loc.length;   //좌표 안에 있는 위치의 개수
-        let data;
+        let data = [];
 
-        for(i =0; i<loc_size; i++)
+        for(let i =0; i<loc_size; i++)
         {
-            const temp_comment = await db.query('SELECT * from comments city_id=? ORDER BY like_comment LIMIT 2', [loc[i].id]); //댓글 조회
+            const [temp_comment] = await db.query('SELECT * from comments city_id=? ORDER BY like_comment LIMIT 2', [loc[i].id]); //댓글 조회
             const mapx = loc[i].lng;
             const mapy = loc[i].lat;
             const comments_size = temp_comment.length; //조회된 댓글 개수 (최대 2)
-            let comments_data;
+            let comments_data = [];
 
-            for(j=0; j<comments_size; j++)
+            for(let j=0; j<comments_size; j++)
             {
                 const username = await userdb.query('SELECT usernamme from uses WHERE id=?', [temp_comment[j].user_id]); //사용자 username 조회
                 comments_data.push({
