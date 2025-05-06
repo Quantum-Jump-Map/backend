@@ -43,6 +43,9 @@ CREATE TABLE IF NOT EXISTS addresses ( -- 주소
 
 CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   id INT AUTO_INCREMENT PRIMARY KEY,
+  city_id INT NOT NULL,
+  district_id INT NOT NULL,
+  road_id INT NOT NULL,
   address_id INT NOT NULL,
   user_id INT NOT NULL,
   content TEXT NOT NULL, --댓글글
@@ -50,7 +53,10 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
   FOREIGN KEY (address_id) REFERENCES addresses(id),
-  dangerous INT NOT NULL
+  FOREIGN KEY (road_id) REFERENCES roads(id),
+  FOREIGN KEY (city_id) REFERENCES cities(id),
+  FOREIGN KEY (district_id) REFERENCES districts(id),
+  -- dangerous INT NOT NULL
   -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
