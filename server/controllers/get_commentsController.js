@@ -6,14 +6,14 @@ import userdb from '../db/userDb.js';
 export async function level1(req, res)  // 시도 단위
 {
     try{
-        const {t_topleftx, t_toplefty, t_bottomrightx, t_bottomrighty} = req.body;
-        const topleftx = parseFloat(t_topleftx);
-        const toplefty = parseFloat(t_toplefty);
-        const bottomrightx = parseFloat(t_bottomrightx);
-        const bottomrighty = parseFloat(t_bottomrighty);
+        const {topleftx, toplefty, bottomrightx, bottomrighty} = req.body;
+        const t_topleftx = parseFloat(topleftx);
+        const t_toplefty = parseFloat(toplefty);
+        const t_bottomrightx = parseFloat(bottomrightx);
+        const t_bottomrighty = parseFloat(bottomrighty);
 
         const loc = await db.query('SELECT * from cities WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
-            [topleftx, bottomrightx, bottomrighty, toplefty]);
+            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
 
         const loc_size = loc.length;   //좌표 안에 있는 위치의 개수
