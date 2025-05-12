@@ -10,8 +10,6 @@ services:
       - "3000:3000"
     depends_on:
       - app-db
-      - user-db
-      - event-db
     volumes:
       - ./server:/app
       - /app/node_modules
@@ -21,7 +19,6 @@ services:
     container_name: app-db-test
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: app_db
       LANG: C.UTF-8
       TZ: Asia/Seoul
     ports:
@@ -30,36 +27,5 @@ services:
       - app_data:/var/lib/mysql
       - ./db/app/init.sql:/docker-entrypoint-initdb.d/init.sql
 
-  user-db:
-    image: mysql:8
-    container_name: user-db-test
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: user_db
-      LANG: C.UTF-8
-      TZ: Asia/Seoul
-    ports:
-      - "3307:3306"
-    volumes:
-      - user_data:/var/lib/mysql
-      - ./db/user/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-  event-db:
-    image: mysql:8
-    container_name: event-db-test
-    environment: 
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: event_db
-      LANG: C.UTF-8
-      TZ: Asia/Seoul
-    ports:
-      - "3308:3306"
-    volumes:
-      - event_data:/var/lib/mysql
-      - ./db/event/init.sql:/docker-entrypoint-initdb.d/init.sql
-
-
 volumes:
   app_data:
-  user_data:
-  event_data:

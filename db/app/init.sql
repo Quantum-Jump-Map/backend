@@ -1,3 +1,9 @@
+DROP DATABASE IF EXISTS 'app-db'
+CREATE DATABASE IF NOT EXISTS 'app-db'
+
+USE 'app-db'
+
+
 CREATE TABLE IF NOT EXISTS cities (  -- 시/도
   id INT AUTO_INCREMENT PRIMARY KEY,
   lat DOUBLE NOT NULL,
@@ -70,3 +76,41 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+
+
+
+DROP DATABASE IF EXISTS 'user-db'
+CREATE DATABASE IF NOT EXISTS 'user-db'
+USE 'user-db'
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL,
+  birth_date DATE NOT NULL,
+  gender ENUM('male', 'female', 'other') NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+DROP DATABASE IF EXISTS 'event-db'
+CREATE DATABASE IF NOT EXISTS 'event-db'
+USE 'event-db'
+
+CREATE TABLE IF NOT EXISTS festivals (
+  content_id VARCHAR(20) PRIMARY KEY, -- TourAPI 고유값
+  title VARCHAR(255) NOT NULL,
+  address_id INT NOT NULL,
+  event_start_date DATE NOT NULL,
+  event_end_date DATE NOT NULL,
+  first_image VARCHAR(255),
+  first_image2 VARCHAR(255),
+  mapx DOUBLE NOT NULL,
+  mapy DOUBLE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
