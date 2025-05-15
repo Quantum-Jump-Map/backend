@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS follows (  -- follow table
   follower_id INT NOT NULL,
   followee_id INT NOT NULL,
-  PRIMARY (follower_id, followee_id)
+  PRIMARY KEY(follower_id, followee_id)
 );
 
 
