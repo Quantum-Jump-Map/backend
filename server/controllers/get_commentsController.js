@@ -6,18 +6,18 @@ import userdb from '../db/userDb.js';
 export async function level1(req, res)  // 시도 단위
 {
     try{
-        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
 
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
-        console.log(req.body);
-        const t_topleftx = parseFloat(TopLeftX);
-        const t_toplefty = parseFloat(TopLeftY);
-        const t_bottomrightx = parseFloat(BottomRightX);
-        const t_bottomrighty = parseFloat(BottomRightY);
+        console.log(req.query);
+        const t_topleftx = Math.min(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
         const [loc] = await db.query('SELECT * from cities WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
-            [t_topleftx, t_bottomrightx, t_toplefty, t_bottomrighty]);
+            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
             res.status(201).json({
@@ -81,18 +81,18 @@ export async function level1(req, res)  // 시도 단위
 export async function level2(req, res)   //시군구 단위
 {
     try{
-        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
-        console.log(req.body);
+        console.log(req.query);
 
-        const t_topleftx = parseFloat(TopLeftX);
-        const t_toplefty = parseFloat(TopLeftY);
-        const t_bottomrightx = parseFloat(BottomRightX);
-        const t_bottomrighty = parseFloat(BottomRightY);
+        const t_topleftx = Math.min(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
         const [loc] = await db.query('SELECT * from districts WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
-            [t_topleftx, t_bottomrightx, t_toplefty, t_bottomrighty]);
+            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
             res.status(201).json({
@@ -156,17 +156,17 @@ export async function level2(req, res)   //시군구 단위
 export async function level3(req, res)   //도로명 단위
 {
     try{
-        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
-        console.log(req.body);
-        const t_topleftx = parseFloat(TopLeftX);
-        const t_toplefty = parseFloat(TopLeftY);
-        const t_bottomrightx = parseFloat(BottomRightX);
-        const t_bottomrighty = parseFloat(BottomRightY);
+        console.log(req.query);
+        const t_topleftx = Math.min(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
         const [loc] = await db.query('SELECT * from roads WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
-            [t_topleftx, t_bottomrightx, t_toplefty, t_bottomrighty]);
+            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
             res.status(201).json({
@@ -230,17 +230,17 @@ export async function level3(req, res)   //도로명 단위
 export async function level4(req, res)   //건물번호 단위
 {
     try{
-        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
-        console.log(req.body);
-        const t_topleftx = parseFloat(TopLeftX);
-        const t_toplefty = parseFloat(TopLeftY);
-        const t_bottomrightx = parseFloat(BottomRightX);
-        const t_bottomrighty = parseFloat(BottomRightY);
+        console.log(req.query);
+        const t_topleftx = Math.min(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
+        const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
         const [loc] = await db.query('SELECT * from addresses WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
-            [t_topleftx, t_bottomrightx, t_toplefty, t_bottomrighty]);
+            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
             res.status(201).json({

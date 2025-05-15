@@ -16,8 +16,10 @@ export async function CoordToAddress(lat, lng) {
 
         if (!res.data.documents.length)
             return null;
+        
+        
 
-        return res.data.documents[0].road_address;
+        return res.data.documents[0]?.road_address || null;
 
     } catch (err) {
         console.error("error", err);

@@ -6,7 +6,10 @@ async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
   const ret_address = await CoordToAddress(latitude, longitude);
   if(ret_address==null)
+  {
+    console.log("no address found");
     return null;
+  }
 
   //2. city 처리
   const [cities_row] = await db.query('SELECT * FROM cities WHERE name=?', [ret_address.region_1depth_name]);
@@ -84,7 +87,7 @@ export async function createComment(req, res) {
     const {city_id, district_id, road_id, address_id} = await getOrCreateAddress(latitude, longitude);
     if(address_id==null)
       return res.status(500).json({
-        message: "error"
+        message: "coordinates not initialized"
       });
 
     await db.execute(
