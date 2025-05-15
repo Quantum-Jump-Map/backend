@@ -35,8 +35,6 @@ const login_req_config = {
 
 async function add_dummy_data()
 {
-    try{
-
         await map_society.request(register_req_config);  //회원가입
         const res = await map_society.request(login_req_config);  //로그인 시도
 
@@ -66,15 +64,12 @@ async function add_dummy_data()
                 data: comment_data
             });
 
-            if(comment_res.data.message !== "댓글 저장 완료")
+            if(!comment_res.data || comment_res.data.message !== "댓글 저장 완료")
             {
                 console.log("error: 댓글 저장 실패");
             }
         }
 
-    } catch(err){
-        console.log("error: " + err);
-    }
 
 }
 

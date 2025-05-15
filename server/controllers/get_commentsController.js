@@ -7,6 +7,8 @@ export async function level1(req, res)  // 시도 단위
 {
     try{
         const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+
+        console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         const t_topleftx = parseFloat(TopLeftX);
         const t_toplefty = parseFloat(TopLeftY);
         const t_bottomrightx = parseFloat(BottomRightX);
@@ -78,6 +80,7 @@ export async function level2(req, res)   //시군구 단위
 {
     try{
         const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         const t_topleftx = parseFloat(TopLeftX);
         const t_toplefty = parseFloat(TopLeftY);
         const t_bottomrightx = parseFloat(BottomRightX);
@@ -149,6 +152,7 @@ export async function level3(req, res)   //도로명 단위
 {
     try{
         const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         const t_topleftx = parseFloat(TopLeftX);
         const t_toplefty = parseFloat(TopLeftY);
         const t_bottomrightx = parseFloat(BottomRightX);
@@ -220,6 +224,7 @@ export async function level4(req, res)   //건물번호 단위
 {
     try{
         const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.body;
+        console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         const t_topleftx = parseFloat(TopLeftX);
         const t_toplefty = parseFloat(TopLeftY);
         const t_bottomrightx = parseFloat(BottomRightX);
