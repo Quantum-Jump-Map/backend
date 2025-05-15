@@ -185,3 +185,58 @@ export async function getUser(req, res) {
         res.status(500).json({error: '오류 발생'});
     }
 }
+
+export async function followUser(req, res) {
+  const {followee_username} = req.body;
+
+  if(!followee_username)
+  {
+    console.log("error: no user defined");
+    return;
+  }
+
+  try{
+
+    const [followee_id_temp] = await db.query('SELECT id FROM users WHERE username=?',[followee_username]);
+    if(followee_id_temp.length==0)
+    {
+      console.log("error: no user found");
+      return;
+    }
+    const followee_id = followee_id_temp[0]?.id;
+
+    if(followee_id === req.user.id)
+    {
+      console.log("error: Following oneself is prohibited");
+      return;
+    }
+
+
+    const [rows] = await db.query('SELECT * from follows WHERE follower_id=? AND followee_id=?', [req.user.id, followee_id]);
+  
+    if(rows.length==0) //팔로우 하기
+    {
+      await db.query('INSERT INTO follows (follower_id, followee_id) VALUES(?,?)', [req.user.id, followee_id]);
+      await db.query('UPDATE users SET follower_count=follower_count+1 WHERE id=?', [followee_id]);
+      console.log(`follow done: ${req.user.id} => ${followee_id}`);
+      res.status(201).json({
+        message: "followed"
+      });
+    }
+
+    else   //팔로우 취소
+    {
+      await db.query('DELETE FROM follows WHERE follower_id=? AND followee_id=?', [req.user.id, followee_id]);
+      await db.query('UPDATE users SET follower_count=follower_count-1 WHERE id=?', [followee_id]);
+      console.log(`unfollowed: ${req.user.id} => ${followee_id}`);
+      res.status(201).json({
+        message: "unfollowed"
+      });
+    }
+  }catch(err){
+
+    console.error("error: ", err);
+    return;
+  }
+
+}

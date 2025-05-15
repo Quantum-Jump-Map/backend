@@ -91,10 +91,16 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(100) NOT NULL,
   birth_date DATE NOT NULL,
   gender ENUM('male', 'female', 'other') NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  follower_count INT DEFAULT 0
 );
 
 
+CREATE TABLE IF NOT EXISTS follows (  -- follow table
+  follower_id INT NOT NULL,
+  followee_id INT NOT NULL,
+  PRIMARY (follower_id, followee_id)
+);
 
 
 
