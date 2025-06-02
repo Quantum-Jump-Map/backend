@@ -317,7 +317,7 @@ export async function reload_profile(req, res)
       return;
     }
 
-    const current_offset_t = parseInt(current_offset_t);
+    const current_offset_t = parseInt(current_offset);
 
     const [user_rows] = await db.query('SELECT * FROM users WHERE username=?',[username]);
 
