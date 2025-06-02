@@ -274,7 +274,7 @@ export async function getProfile(req, res){
 
     const user_info = user_rows[0];
 
-    const [comments_rows] = await db.query(
+    const [comments_rows] = await commentdb.query(
       `SELECT c.content, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
