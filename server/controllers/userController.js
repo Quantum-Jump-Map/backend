@@ -331,6 +331,8 @@ export async function reload_profile(req, res)
       return;
     }
 
+    const user_info = user_rows[0];
+
     const [comments_rows] = await commentdb.query(
       `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
         FROM comments c
@@ -339,7 +341,7 @@ export async function reload_profile(req, res)
         ORDER BY c.created_at DESC
         LIMIT 10
         OFFSET ?`,
-    [user_rows.id, current_offset_t]);
+    [user_info.id, current_offset_t]);
 
     res.status(201).json(
       {
