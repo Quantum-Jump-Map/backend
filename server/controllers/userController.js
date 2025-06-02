@@ -260,7 +260,7 @@ export async function getProfile(req, res){
 
     console.log(username);
 
-    const [user_rows] = db.query('SELECT * FROM users WHERE username=?',[username]);  //사용자 정보 DB 조회
+    const [user_rows] = db.query('SELECT * FROM users WHERE username=?', username);  //사용자 정보 DB 조회
 
     if(user_rows.length==0)   //조회된 사용자가 없을때 
     {
@@ -294,6 +294,9 @@ export async function getProfile(req, res){
   } catch(err) {
     
     console.error("에러: ", err);
+    res.status(501).json({
+      error: err
+    });
     return;
   }
 }
