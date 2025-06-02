@@ -11,6 +11,6 @@ router.patch('/editUser', CheckAndRemakeToken, editUser);
 router.delete('/deleteUser', deleteUser);
 router.get('/getUser', CheckAndRemakeToken, getUser);
 router.post('/followUser', CheckAndRemakeToken, followUser);
-router.post('/getProfile', CheckAndRemakeToken, getProfile);
+router.get('/getProfile', CheckAndRemakeToken, getProfile);
 
 export default router;
