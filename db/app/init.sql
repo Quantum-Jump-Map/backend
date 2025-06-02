@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   road_id INT NOT NULL,
   address_id INT NOT NULL,
   user_id INT NOT NULL,
-  content TEXT NOT NULL,  -- 댓글글
+  content TEXT NOT NULL,  -- 댓글
   is_anonymous BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS users (
   follower_count INT DEFAULT 0,
   follower_count INT DEFAULT 0,
   total_like_count INT DEFAULT 0,
-  profile_comment TEXT DEFAULT ''
+  profile_comment VARCHAR(255) DEFAULT ''
 );
 
 
