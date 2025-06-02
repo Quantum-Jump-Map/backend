@@ -1,4 +1,5 @@
 import db from '../db/userDb.js';
+import commentdb from '../db/appDb.js';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { makeToken } from '../JWT/token.js';
@@ -218,6 +219,7 @@ export async function followUser(req, res) {
     {
       await db.query('INSERT INTO follows (follower_id, followee_id) VALUES(?,?)', [req.user.id, followee_id]);
       await db.query('UPDATE users SET follower_count=follower_count+1 WHERE id=?', [followee_id]);
+      await db.query('UPDATE users SET followee_count=followee_count+1 WHERE id=?', [req.user.id]);
       console.log(`follow done: ${req.user.id} => ${followee_id}`);
       res.status(201).json({
         message: "followed"
@@ -228,6 +230,7 @@ export async function followUser(req, res) {
     {
       await db.query('DELETE FROM follows WHERE follower_id=? AND followee_id=?', [req.user.id, followee_id]);
       await db.query('UPDATE users SET follower_count=follower_count-1 WHERE id=?', [followee_id]);
+      await db.query('UPDATE users SET followee_count=followee_count-1 WHERE id=?', [req.user.id]);
       console.log(`unfollowed: ${req.user.id} => ${followee_id}`);
       res.status(201).json({
         message: "unfollowed"
@@ -239,4 +242,56 @@ export async function followUser(req, res) {
     return;
   }
 
+}
+
+export async function getProfile(req, res){
+
+  try{
+    const {username} = req.query;
+
+    if(!username) //사용자 입력이 없을 때
+    {
+      console.log("no user defined");
+      res.status(401).json({
+        "message": "no user defined"
+      });
+      return;
+    }
+
+    const [user_rows] = db.query('SELECT * FROM users WHERE username=?',[username]);  //사용자 정보 DB 조회
+
+    if(user_rows.length==0)   //조회된 사용자가 없을때 
+    {
+      console.log("no user searched");
+      res.status(401).json({
+        "message": "no user searched"
+      });
+
+      return;
+    }
+
+    const user_info = user_rows[0];
+
+    const [comments_rows] = db.query(
+      `SELECT c.content, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
+        FROM comments c
+        JOIN app_db.addresses a ON c.address_id=a.id
+        WHERE c.user_id=?
+        ORDER BY c.created_at DESC
+        LIMIT 10`
+      , [user_info.id]);
+
+    res.status(201).json({
+      follower_count: user_info.follower_count,
+      followee_count: user_info.followee_count,
+      total_like_count: user_info.total_like_count,
+      profile_comment: user_rows,
+      comments: comments_rows
+    });
+
+  } catch(err) {
+    
+    console.error("에러: ", err);
+    return;
+  }
 }

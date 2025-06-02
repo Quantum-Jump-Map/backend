@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerUser, loginUser, editUser, 
-    deleteUser, getUser, followUser } from '../controllers/userController.js';
+    deleteUser, getUser, followUser, getProfile } from '../controllers/userController.js';
 import { CheckAndRemakeToken } from '../JWT/middleware.js';
 
 const router = express.Router();
@@ -11,5 +11,6 @@ router.patch('/editUser', CheckAndRemakeToken, editUser);
 router.delete('/deleteUser', deleteUser);
 router.get('/getUser', CheckAndRemakeToken, getUser);
 router.post('/followUser', CheckAndRemakeToken, followUser);
+router.post('/getProfile', CheckAndRemakeToken, getProfile);
 
 export default router;
