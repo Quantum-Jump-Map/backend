@@ -306,7 +306,7 @@ export async function getProfile(req, res){
 export async function reload_profile(req, res)
 {
   try{
-    const {username, current_offset} = req.query;
+    const {username, current_offset_t} = req.query;
     if(!username)
     {
       console.log("username not defined");
@@ -316,6 +316,8 @@ export async function reload_profile(req, res)
 
       return;
     }
+
+    const current_offset = parseInt(current_offset_t);
 
     const [user_rows] = await db.query('SELECT * FROM users WHERE username=?',[username]);
 
