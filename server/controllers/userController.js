@@ -335,7 +335,7 @@ export async function reload_profile(req, res)
       `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
-        WHERE id=?
+        WHERE c.user_id=?
         ORDER BY c.created_at DESC
         LIMIT 10
         OFFSET ?`,
