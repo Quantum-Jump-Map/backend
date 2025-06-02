@@ -306,7 +306,7 @@ export async function getProfile(req, res){
 export async function reload_profile(req, res)
 {
   try{
-    const {username, current_offset_t} = req.query;
+    const {username, current_offset} = req.query;
     if(!username)
     {
       console.log("username not defined");
@@ -317,7 +317,7 @@ export async function reload_profile(req, res)
       return;
     }
 
-    const current_offset = parseInt(current_offset_t);
+    const current_offset_t = parseInt(current_offset_t);
 
     const [user_rows] = await db.query('SELECT * FROM users WHERE username=?',[username]);
 
@@ -339,11 +339,11 @@ export async function reload_profile(req, res)
         ORDER BY c.created_at DESC
         LIMIT 10
         OFFSET ?`,
-    [user_rows.id, current_offset]);
+    [user_rows.id, current_offset_t]);
 
     res.status(201).json(
       {
-        "comments_offset": current_offset+comments_rows.length,
+        "comments_offset": current_offset_t+comments_rows.length,
         "comments": comments_rows
       }
     );
