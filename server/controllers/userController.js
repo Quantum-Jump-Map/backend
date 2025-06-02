@@ -287,7 +287,7 @@ export async function getProfile(req, res){
       follower_count: user_info.follower_count,
       followee_count: user_info.followee_count,
       total_like_count: user_info.total_like_count,
-      profile_comment: user_rows,
+      profile_comment: user_info.profile_comment,
       comments: comments_rows
     });
 
