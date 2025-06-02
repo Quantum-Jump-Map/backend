@@ -275,7 +275,7 @@ export async function getProfile(req, res){
     const user_info = user_rows[0];
 
     const [comments_rows] = await commentdb.query(
-      `SELECT c.content, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
+      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
         WHERE c.user_id=?
@@ -288,7 +288,8 @@ export async function getProfile(req, res){
       followee_count: user_info.followee_count,
       total_like_count: user_info.total_like_count,
       profile_comment: user_info.profile_comment,
-      comments: comments_rows
+      comments: comments_rows,
+      comment_offset: comments_rows.length
     });
 
   } catch(err) {
@@ -297,6 +298,61 @@ export async function getProfile(req, res){
     res.status(501).json({
       error: err
     });
+    return;
+  }
+}
+
+
+export async function reload_profile(req, res)
+{
+  try{
+    const {username, current_offset} = req.query;
+    if(!username)
+    {
+      console.log("username not defined");
+      res.status(401).json({
+        message: "username not defined"
+      });
+
+      return;
+    }
+
+    const [user_rows] = await db.query('SELECT * FROM users WHERE username=?',[username]);
+
+    if(user_rows.length==0)
+    {
+      console.log("no user searched");
+      res.status(401).json({
+        message: "no user searched"
+      });
+
+      return;
+    }
+
+    const [comments_rows] = await commentdb.query(
+      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
+        FROM comments c
+        JOIN app_db.addresses a ON c.address_id=a.id
+        WHERE id=?
+        ORDER BY c.created_at DESC
+        LIMIT 10
+        OFFSET ?`,
+    [user_rows.id, current_offset]);
+
+    res.status(201).json(
+      {
+        "comments_offset": current_offset+comments_rows.length,
+        "comments": comments_rows
+      }
+    );
+
+  } catch(err){
+    
+    console.error("error: ", err);
+    res.status(501).json({
+      error: err
+    });
+
     return;
   }
 }
