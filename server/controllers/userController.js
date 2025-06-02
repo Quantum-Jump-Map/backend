@@ -343,8 +343,8 @@ export async function reload_profile(req, res)
 
     res.status(201).json(
       {
-        "comments_offset": current_offset_t+comments_rows.length,
-        "comments": comments_rows
+        comments_offset: current_offset_t+comments_rows.length,
+        comments: comments_rows
       }
     );
 
