@@ -260,7 +260,7 @@ export async function getProfile(req, res){
 
     console.log(username);
 
-    const [user_rows] = db.query('SELECT * FROM users WHERE username=?', username);  //사용자 정보 DB 조회
+    const [user_rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);  //사용자 정보 DB 조회
 
     if(user_rows.length==0)   //조회된 사용자가 없을때 
     {
@@ -274,7 +274,7 @@ export async function getProfile(req, res){
 
     const user_info = user_rows[0];
 
-    const [comments_rows] = db.query(
+    const [comments_rows] = await db.query(
       `SELECT c.content, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
