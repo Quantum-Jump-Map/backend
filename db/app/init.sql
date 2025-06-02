@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS users (
   gender ENUM('male', 'female', 'other') NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   follower_count INT DEFAULT 0,
-  follower_count INT DEFAULT 0,
+  followee_count INT DEFAULT 0,
   total_like_count INT DEFAULT 0,
   profile_comment VARCHAR(255) DEFAULT ''
 );
