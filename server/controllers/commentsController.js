@@ -95,6 +95,10 @@ export async function createComment(req, res) {
       [user_id, content, city_id, district_id, road_id, address_id]
     );
 
+    await userdb.execute(
+      `UPDATE users SET total_comment_count=total_comment_count+1 WHERE id=?`, [user_id]
+    );
+
     res.status(201).json({ 
       token: res.locals.newToken,
       message: '댓글 저장 완료' });
@@ -127,11 +131,16 @@ export async function deleteComment(req, res) {
 
     await db.execute('DELETE FROM comments WHERE id = ?', [comment_id]);
 
+    await userdb.execute(
+      `UPDATE users SET total_comment_count=total_comment_count-1 WHERE id=?`, [user_id]
+    );
+
     res.status(200).json({
       token: res.locals.newToken,
       message: '댓글이 삭제되었습니다.',
       deleted_id: comment_id
     });
+
 
   } catch (err) {
     console.error('오류', err);

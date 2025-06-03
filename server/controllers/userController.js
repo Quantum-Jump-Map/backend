@@ -247,7 +247,7 @@ export async function followUser(req, res) {  //사용자 팔로우 / 취소
 export async function getProfile(req, res){   //사용자 프로필 가져오기 
 
   try{
-    const {username} = req.query;
+    const {username, current_offset_t} = req.query;
 
     if(!username) //사용자 입력이 없을 때
     {
@@ -258,7 +258,7 @@ export async function getProfile(req, res){   //사용자 프로필 가져오기
       return;
     }
 
-    console.log(username);
+    console.log(username); //디버깅용 
 
     const [user_rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);  //사용자 정보 DB 조회
 
@@ -272,66 +272,9 @@ export async function getProfile(req, res){   //사용자 프로필 가져오기
       return;
     }
 
-    const user_info = user_rows[0];
+    const user_info = user_rows[0];   //사용자 정보 
 
-    const [comments_rows] = await commentdb.query(
-      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
-        FROM comments c
-        JOIN app_db.addresses a ON c.address_id=a.id
-        WHERE c.user_id=?
-        ORDER BY c.created_at DESC
-        LIMIT 10`
-      , [user_info.id]);
-
-    res.status(201).json({
-      follower_count: user_info.follower_count,
-      followee_count: user_info.followee_count,
-      total_like_count: user_info.total_like_count,
-      profile_comment: user_info.profile_comment,
-      comments: comments_rows,
-      comment_offset: comments_rows.length
-    });
-
-  } catch(err) {
-    
-    console.error("에러: ", err);
-    res.status(501).json({
-      error: err
-    });
-    return;
-  }
-}
-
-
-export async function reload_profile(req, res)   //프로필에서 사용자 댓글 더 불러오기 
-{
-  try{
-    const {username, current_offset} = req.query;
-    if(!username)
-    {
-      console.log("username not defined");
-      res.status(401).json({
-        message: "username not defined"
-      });
-
-      return;
-    }
-
-    const current_offset_t = parseInt(current_offset);
-
-    const [user_rows] = await db.query('SELECT * FROM users WHERE username=?',[username]);
-
-    if(user_rows.length==0)
-    {
-      console.log("no user searched");
-      res.status(401).json({
-        message: "no user searched"
-      });
-
-      return;
-    }
-
-    const user_info = user_rows[0];
+    const current_offset = (current_offset_t==NULL) ? 0 : parseInt(current_offset_t);
 
     const [comments_rows] = await commentdb.query(
       `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
@@ -340,23 +283,26 @@ export async function reload_profile(req, res)   //프로필에서 사용자 댓
         WHERE c.user_id=?
         ORDER BY c.created_at DESC
         LIMIT 10
-        OFFSET ?`,
-    [user_info.id, current_offset_t]);
+        OFFSET ?`
+      , [user_info.id, current_offset]);
 
-    res.status(201).json(
-      {
-        comments_offset: current_offset_t+comments_rows.length,
-        comments: comments_rows
-      }
-    );
+    res.status(201).json({
+      token: res.locals.newToken,
+      follower_count: user_info.follower_count,
+      followee_count: user_info.followee_count,
+      total_like_count: user_info.total_like_count,
+      total_comment_count: user_info.total_comment_count,
+      profile_comment: user_info.profile_comment,
+      comments: comments_rows,
+      comment_offset: comments_rows.length+current_offset
+    });
 
-  } catch(err){
+  } catch(err) {
     
-    console.error("error: ", err);
+    console.error("에러: ", err);
     res.status(501).json({
       error: err
     });
-
     return;
   }
 }

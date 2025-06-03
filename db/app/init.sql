@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS users (
   follower_count INT DEFAULT 0,
   followee_count INT DEFAULT 0,
   total_like_count INT DEFAULT 0,
+  total_comment_count INT DEFAULT 0,
   profile_comment VARCHAR(255) DEFAULT ''
 );
 
