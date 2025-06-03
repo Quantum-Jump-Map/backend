@@ -149,10 +149,10 @@ export async function deleteUser(req, res) {    //사용자 정보 삭제 (는 �
 }
 
 
-export async function getUser(req, res) {
+export async function getUser(req, res) {   //사용자 정보 가져오기(본인)
 
   const {req_password} = req.user;
-  username = req.user.username;
+  const username = req.user.username;
 
   try {
     const [rows] = await db.query('SELECT * FROM users WHERE username=?', [username]);
@@ -187,7 +187,7 @@ export async function getUser(req, res) {
     }
 }
 
-export async function followUser(req, res) {
+export async function followUser(req, res) {  //사용자 팔로우 / 취소 
   const {followee_username} = req.body;
 
   if(!followee_username)
@@ -244,7 +244,7 @@ export async function followUser(req, res) {
 
 }
 
-export async function getProfile(req, res){
+export async function getProfile(req, res){   //사용자 프로필 가져오기 
 
   try{
     const {username} = req.query;
@@ -303,7 +303,7 @@ export async function getProfile(req, res){
 }
 
 
-export async function reload_profile(req, res)
+export async function reload_profile(req, res)   //프로필에서 사용자 댓글 더 불러오기 
 {
   try{
     const {username, current_offset} = req.query;
