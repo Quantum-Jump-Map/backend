@@ -17,8 +17,6 @@ export async function CoordToAddress(lat, lng) {
         if (!res.data.documents.length)
             return null;
         
-        
-
         return res.data.documents[0] || null;
 
     } catch (err) {
