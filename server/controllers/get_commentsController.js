@@ -213,8 +213,8 @@ export async function get_all_level2(req, res)
                 OFFSET ?`, [district_id_t, offset_t]);
 
         res.status(201).json({
-            data_size: city_row.length,
-            offset: offset_t+city_row.length,
+            data_size: district_row.length,
+            offset: offset_t+district.length,
             comments: district_row
         });
         
