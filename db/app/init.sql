@@ -71,6 +71,8 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   is_anonymous BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
+  lat DOUBLE NOT NULL,
+  lng DOUBLE NOT NULL,
   FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id),
   FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id),

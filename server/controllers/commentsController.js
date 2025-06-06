@@ -149,16 +149,16 @@ export async function createComment(req, res) {
 
     if(is_road==true){
       await db.execute(
-      'INSERT INTO comments (user_id, content, city_id, district_id, road_id, address_id) VALUES (?, ?, ?, ?, ?, ?)',
-      [user_id, content, city_id, district_id, RoadOrDongId, address_id]
+      'INSERT INTO comments (user_id, content, city_id, district_id, road_id, address_id, lat, lng) VALUES (?, ?, ?, ?, ?, ?,?,?)',
+      [user_id, content, city_id, district_id, RoadOrDongId, address_id, latitude, longitude]
       );
     }
 
     else
     {
       await db.execute(
-        'INSERT INTO comments (user_id, content, city_id, district_id, legal_dong_id, address_id) VALUES (?,?,?,?,?,?)',
-        [user_id, content, city_id, district_id, RoadOrDongId, address_id]
+        'INSERT INTO comments (user_id, content, city_id, district_id, legal_dong_id, address_id, lat, lng) VALUES (?,?,?,?,?,?,?,?)',
+        [user_id, content, city_id, district_id, RoadOrDongId, address_id, latitude, longitude]
       );
     }
 

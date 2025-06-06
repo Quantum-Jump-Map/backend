@@ -60,6 +60,7 @@ export async function level1(req, res)  // 시도 단위
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
+                city_id: l.id,
                 comments_size: comment_info[l.id].length,
                 comments: comment_info[l.id]
             });
@@ -76,6 +77,40 @@ export async function level1(req, res)  // 시도 단위
             error: "server error"
         });
     }
+}
+
+export async function get_all_level1(req, res)
+{
+    try{
+    
+        const {city_id, offset} = req.query;
+
+        const [city_row] = await db.query(
+            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                FROM comments c
+                JOIN user_db.users u ON u.id=c.user_id
+                WHERE c.city_id=?
+                ORDER BY c.like_count DESC
+                LIMIT 10
+                OFFSET ?`, [city_id, offset]);
+
+        res.status(201).json({
+            data_size: city_row.length,
+            offset: offset+city_row.length,
+            comments: city_row
+        });
+        
+    } catch(err) {
+        
+        console.error("error: ", err);
+        res.status(501).json({
+            error: err
+        });
+
+        return;
+    }
+
+    
 }
 
 export async function level2(req, res)   //시군구 단위
@@ -153,6 +188,24 @@ export async function level2(req, res)   //시군구 단위
     }
 }
 
+export async function get_all_level2(req, res)
+{
+    try{
+    
+        
+    } catch(err) {
+        
+        console.error("error: ", err);
+        res.status(501).json({
+            error: err
+        });
+
+        return;
+    }
+
+    
+}
+
 export async function level3(req, res)   //도로명 단위
 {
     try{
@@ -225,6 +278,25 @@ export async function level3(req, res)   //도로명 단위
             error: "server error"
         });
     }
+}
+
+export async function get_all_level3(req, res)
+{
+    try{
+    
+       
+        
+    } catch(err) {
+        
+        console.error("error: ", err);
+        res.status(501).json({
+            error: err
+        });
+
+        return;
+    }
+
+    
 }
 
 export async function level4(req, res)   //건물번호 단위
@@ -300,4 +372,69 @@ export async function level4(req, res)   //건물번호 단위
 
         });
     }
+}
+
+export async function get_all_level4(req, res)
+{
+    try{
+    
+        const {city_id, offset} = req.query;
+
+        const [city_row] = await db.query(
+            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                FROM comments c
+                JOIN user_db.users u ON u.id=c.user_id
+                WHERE c.city_id=?
+                ORDER BY c.like_count DESC
+                LIMIT 10
+                OFFSET ?`, [city_id, offset]);
+
+        res.status(201).json({
+            data_size: city_row.length,
+            offset: offset+city_row.length,
+            comments: city_row
+        });
+        
+    } catch(err) {
+        
+        console.error("error: ", err);
+        res.status(501).json({
+            error: err
+        });
+
+        return;
+    }
+
+}
+
+export async function level5(req, res)   //건물번호 단위
+{
+    try{
+        
+
+    } catch(err) {
+        console.error("error: ", err);
+        res.status(401).json({
+            error: "server error"
+
+        });
+    }
+}
+
+export async function get_all_level5(req, res)
+{
+    try{
+    
+        
+    } catch(err) {
+        
+        console.error("error: ", err);
+        res.status(501).json({
+            error: err
+        });
+
+        return;
+    }
+
+    
 }
