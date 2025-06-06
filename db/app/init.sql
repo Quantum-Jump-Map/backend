@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS addresses ( -- 주소
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
   FOREIGN KEY (road_id) REFERENCES roads(id),
-  FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id)
+  FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id),
   FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id)
 );
