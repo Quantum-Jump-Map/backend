@@ -306,3 +306,9 @@ export async function getProfile(req, res){   //사용자 프로필 가져오기
     return;
   }
 }
+
+
+export async function reloadProfile(req, res)
+{
+  return;
+}
