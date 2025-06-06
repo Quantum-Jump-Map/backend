@@ -4,12 +4,25 @@ import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
 
 async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
-  const ret_address = await CoordToAddress(latitude, longitude);
+  const ret_address_t = await CoordToAddress(latitude, longitude);
   if(ret_address==null)
   {
     console.log("no address found");
     return null;
   }
+
+  let is_road = false;   //도로명 주소인지 flag 
+  let ret_address;
+
+  if(ret_address_t.road_address!=null)
+  {
+    is_road=true;
+    ret_address = ret_address_t.road_address;
+  }
+
+  else
+    ret_address = ret_address.address;
+
 
   //2. city 처리
   const [cities_row] = await db.query('SELECT * FROM cities WHERE name=?', [ret_address.region_1depth_name]);
@@ -33,43 +46,81 @@ async function getOrCreateAddress(latitude, longitude) {
     district_id = res.insertId;
   }
 
-  //4. roads 처리
-  
-  const [roads_row] = await db.query('SELECT * FROM roads WHERE district_id=? AND name=?', [district_id, ret_address.road_name]);
-  let road_id = roads_row[0]?.id;
+  //4-1. roads 처리
 
-  if(roads_row.length==0)
-  {
-    const {x: road_x, y: road_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name}`);
-    const [res] = await db.query('INSERT INTO roads (name, city_id, district_id, lat, lng) VALUES(?,?,?,?,?)',[ret_address.road_name, city_id, district_id, road_y, road_x]);
-    road_id = res.insertId;
+  let RoadOrDongId;
+
+  if(is_road==true) {
+  
+    const [roads_row] = await db.query('SELECT * FROM roads WHERE district_id=? AND name=?', [district_id, ret_address.road_name]);
+    RoadOrDongId = roads_row[0]?.id;
+
+    if(roads_row.length==0)
+    {
+      const {x: road_x, y: road_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name}`);
+      const [res] = await db.query('INSERT INTO roads (name, city_id, district_id, lat, lng) VALUES(?,?,?,?,?)',[ret_address.road_name, city_id, district_id, road_y, road_x]);
+      RoadOrDongId = res.insertId;
+    }
+  }
+
+  //4-2. 동 처리
+  else {
+    const [dong_row] = await db.query('SELECT * FROM legal_dongs WHERE district_id=? AND name=?', [district_id, ret_address.region_3depth_name]);
+    RoadOrDongId = dong_row[0]?.id;
+
+    if(dong_row.length==0)
+    {
+      const {x: dong_x, y: dong_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.region_3depth_name}`);
+      const [res] = await db.query('INSERT INTO legal_dongs (name, city_id, district_id, lat, lng) VALUES (?,?,?,?,?)', [ret_address.region_3depth_name, city_id, district_id, dong_y, dong_x]);
+      RoadOrDongId = res.insertID;
+    }
   }
 
   // 5. addresses 처리
-  let building_num = ret_address.main_building_no;
-  if(ret_address.sub_building_no!="")
+  let building_num = ret_address.main_building_no || ret_address.main_address_no;
+  let address_id;
+
+  if(is_road==true) {  //도로명 주소 
+    
     building_num += `-${ret_address.sub_building_no}`;
 
-  const [addresses_row] = await db.query('SELECT * FROM addresses WHERE road_id=? AND building_num=?', [road_id, building_num]);
-  let address_id = addresses_row[0]?.id;
+    const [addresses_row] = await db.query('SELECT * FROM addresses WHERE road_id=? AND address_num=?', [RoadOrDongId, building_num]);
+    address_id = addresses_row[0]?.id;
 
-  if(addresses_row.length==0)
-  {
-    const {x: address_x, y: address_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name} ${building_num}`);
-    const [res] = await db.query('INSERT INTO addresses (city_id, district_id, road_id, building_num, lat, lng) VALUES(?,?,?,?,?,?)',
-      [city_id, district_id, road_id, building_num, address_y, address_x]);
-    address_id = res.insertId;
+    if(addresses_row.length==0)
+    {
+      const {x: address_x, y: address_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.road_name} ${building_num}`);
+      const [res] = await db.query('INSERT INTO addresses (city_id, district_id, road_id, address_num, lat, lng) VALUES(?,?,?,?,?,?)',
+        [city_id, district_id, RoadOrDongId, building_num, address_y, address_x]);
+      address_id = res.insertId;
+    }
+  }
+
+  else {  //지번 주소 
+    building_num += `-${ret_address.sub_address_no}`;
+
+    const [addresses_row] = await db.query('SELECT * FROM addresses WHERE legal_dong_id=? AND address_num=?', [RoadOrDongId, building_num]);
+    address_id = addresses_row[0]?.id;
+
+    if(addresses_row.length==0)
+    {
+      const {x: address_x, y: address_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.region_3depth_name} ${building_num}`);
+      const [res] = await db.query('INSERT INTO addresses (city_id, district_id, legal_dong_id, address_num, lat, lng, is_road) VALUES(?,?,?,?,?,?,0)',
+        [city_id, district_id, RoadOrDongId, building_num, address_y, address_x]);
+      address_id = res.insertId;
+    }
   }
 
   console.log("1. " + city_id);
   console.log("2. " + district_id);
-  console.log("3. " + road_id);
+  console.log("3. " + RoadOrDongId);
   console.log("4. " + address_id);
 
   return {
+    is_road: is_road,
     city_id: city_id,
     district_id: district_id,
-    road_id: road_id,
+    RoadOrDongId: RoadOrDongId,
     address_id: address_id
   };
 
@@ -84,16 +135,26 @@ export async function createComment(req, res) {
   }
 
   try {
-    const {city_id, district_id, road_id, address_id} = await getOrCreateAddress(latitude, longitude);
+    const {is_road, city_id, district_id, RoadOrDongId, address_id} = await getOrCreateAddress(latitude, longitude);
     if(address_id==null)
       return res.status(500).json({
         message: "coordinates not initialized"
       });
 
-    await db.execute(
+    if(is_road==true){
+      await db.execute(
       'INSERT INTO comments (user_id, content, city_id, district_id, road_id, address_id) VALUES (?, ?, ?, ?, ?, ?)',
-      [user_id, content, city_id, district_id, road_id, address_id]
-    );
+      [user_id, content, city_id, district_id, RoadOrDongId, address_id]
+      );
+    }
+
+    else
+    {
+      await db.execute(
+        'INSERT INTO comments (user_id, content, city_id, district_id, legal_dong_id, address_id) VALUES (?,?,?,?,?,?)',
+        [user_id, content, city_id, district_id, RoadOrDongId, address_id]
+      );
+    }
 
     await userdb.execute(
       `UPDATE users SET total_comment_count=total_comment_count+1 WHERE id=?`, [user_id]
