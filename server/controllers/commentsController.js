@@ -7,8 +7,8 @@ async function getOrCreateAddress(latitude, longitude) {
   const ret_address_t = await CoordToAddress(latitude, longitude);
 
   console.log(ret_address_t);
-  
-  if(ret_address_t.length==0)
+
+  if(!ret_address_t)
   {
     console.log("no address found");
     return null;
