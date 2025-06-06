@@ -84,8 +84,8 @@ export async function get_all_level1(req, res)
     try{
     
         const {city_id, offset} = req.query;
-        const city_id_t = parseInt(city_id_t);
-        const offset_t = parseInt(offset_t);
+        const city_id_t = parseInt(city_id);
+        const offset_t = parseInt(offset);
 
         console.log(city_id_t);
         console.log(offset_t);
