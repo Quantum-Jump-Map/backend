@@ -83,7 +83,9 @@ export async function get_all_level1(req, res)
 {
     try{
     
-        const {city_id, offset} = req.query;
+        const {city_id_t, offset_t} = req.query;
+        const city_id = parseInt(city_id_t);
+        const offset = parseInt(offset_t);
 
         const [city_row] = await db.query(
             `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
