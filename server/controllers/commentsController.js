@@ -24,7 +24,7 @@ async function getOrCreateAddress(latitude, longitude) {
   }
 
   else
-    ret_address = ret_address.address;
+    ret_address = ret_address_t.address;
 
 
   //2. city 처리
