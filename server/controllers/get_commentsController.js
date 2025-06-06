@@ -114,8 +114,6 @@ export async function get_all_level1(req, res)
 
         return;
     }
-
-    
 }
 
 export async function level2(req, res)   //시군구 단위
@@ -175,6 +173,7 @@ export async function level2(req, res)   //시군구 단위
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
+                district_id: l.id,
                 comments_size: comment_info[l.id].length,
                 comments: comment_info[l.id]
             });
@@ -197,6 +196,27 @@ export async function get_all_level2(req, res)
 {
     try{
     
+        const {district_id, offset} = req.query;
+        const district_id_t = parseInt(district_id);
+        const offset_t = parseInt(offset);
+
+        console.log(city_id_t);
+        console.log(offset_t);
+
+        const [district_row] = await db.query(
+            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                FROM comments c
+                JOIN user_db.users u ON u.id=c.user_id
+                WHERE c.district_id=?
+                ORDER BY c.like_count DESC
+                LIMIT 10
+                OFFSET ?`, [district_id_t, offset_t]);
+
+        res.status(201).json({
+            data_size: city_row.length,
+            offset: offset_t+city_row.length,
+            comments: district_row
+        });
         
     } catch(err) {
         
