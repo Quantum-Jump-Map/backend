@@ -5,7 +5,7 @@ import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
 async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
   const ret_address_t = await CoordToAddress(latitude, longitude);
-  if(ret_address==null)
+  if(ret_address_t==null)
   {
     console.log("no address found");
     return null;
