@@ -214,7 +214,7 @@ export async function get_all_level2(req, res)
 
         res.status(201).json({
             data_size: district_row.length,
-            offset: offset_t+district.length,
+            offset: offset_t+district_row.length,
             comments: district_row
         });
         
