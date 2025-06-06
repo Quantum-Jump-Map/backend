@@ -21,6 +21,17 @@ CREATE TABLE IF NOT EXISTS districts (  -- 시/군/구
   FOREIGN KEY (city_id) REFERENCES cities(id)
 );
 
+CREATE TABLE IF NOT EXISTS legal_dongs (  -- 동/읍/면 
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  city_id INT NOT NULL,
+  district_id INT NOT NULL,
+  lat DOUBLE NOT NULL,
+  lng DOUBLE NOT NULL,
+  FOREIGN KEY (city_id) REFERENCES cities(id),
+  FOREIGN KEY (district_id) REFERENCES districts(id)
+);
+
 CREATE TABLE IF NOT EXISTS roads (  -- 도로명
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
@@ -28,42 +39,39 @@ CREATE TABLE IF NOT EXISTS roads (  -- 도로명
   district_id INT NOT NULL,
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
-  UNIQUE(name, city_id, district_id),
   FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id)
 );
 
 CREATE TABLE IF NOT EXISTS addresses ( -- 주소
   id INT AUTO_INCREMENT PRIMARY KEY,
-  road_id INT NOT NULL,
-  city_id INT NOT NULL,
-  district_id INT NOT NULL,
-  building_num VARCHAR(10) NOT NULL, 
+  is_road BOOLEAN DEFAULT 1,
+  road_id INT,
+  legal_dong_id INT,
+  address_num VARCHAR(10) NOT NULL, 
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
   FOREIGN KEY (road_id) REFERENCES roads(id),
-  FOREIGN KEY (city_id) REFERENCES cities(id),
-  FOREIGN KEY (district_id) REFERENCES districts(id),
-  UNIQUE (road_id, city_id, district_id, building_num)
+  FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id)
 );
 
 CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   id INT AUTO_INCREMENT PRIMARY KEY,
+  address_id INT NOT NULL,
   city_id INT NOT NULL,
   district_id INT NOT NULL,
-  road_id INT NOT NULL,
-  address_id INT NOT NULL,
+  legal_dong_id INT,
+  road_id INT,
   user_id INT NOT NULL,
   content TEXT NOT NULL,  -- 댓글
   is_anonymous BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   like_count INT DEFAULT 0,
-  FOREIGN KEY (address_id) REFERENCES addresses(id),
-  FOREIGN KEY (road_id) REFERENCES roads(id),
   FOREIGN KEY (city_id) REFERENCES cities(id),
-  FOREIGN KEY (district_id) REFERENCES districts(id)
-  -- dangerous INT NOT NULL
-  -- FOREIGN KEY (user_id) REFERENCES users(id)
+  FOREIGN KEY (district_id) REFERENCES districts(id),
+  FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id),
+  FOREIGN KEY (road_id) REFERENCES roads(id),
+  FOREIGN KEY (address_id) REFERENCES addresses(id)
 );
 
 CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
@@ -73,10 +81,7 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (comment_id, user_id),
   FOREIGN KEY (comment_id) REFERENCES comments(id)
-  -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-
 
 
 DROP DATABASE IF EXISTS user_db;
