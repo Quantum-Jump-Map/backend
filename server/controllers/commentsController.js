@@ -115,6 +115,7 @@ async function getOrCreateAddress(latitude, longitude) {
   console.log("2. " + district_id);
   console.log("3. " + RoadOrDongId);
   console.log("4. " + address_id);
+  console.log("is road: " + is_road);
 
   return {
     is_road: is_road,
