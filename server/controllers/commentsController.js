@@ -75,7 +75,7 @@ async function getOrCreateAddress(latitude, longitude) {
     {
       const {x: dong_x, y: dong_y} = await AddressToCoord(`${ret_address.region_1depth_name} ${ret_address.region_2depth_name} ${ret_address.region_3depth_name}`);
       const [res] = await db.query('INSERT INTO legal_dongs (name, city_id, district_id, lat, lng) VALUES (?,?,?,?,?)', [ret_address.region_3depth_name, city_id, district_id, dong_y, dong_x]);
-      RoadOrDongId = res.insertID;
+      RoadOrDongId = res.insertId;
     }
   }
 
