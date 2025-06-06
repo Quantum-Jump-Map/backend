@@ -79,6 +79,8 @@ async function getOrCreateAddress(latitude, longitude) {
     }
   }
 
+  console.log(RoadOrDongId);
+
   // 5. addresses 처리
   let building_num = ret_address.main_building_no || ret_address.main_address_no;
   let address_id;
