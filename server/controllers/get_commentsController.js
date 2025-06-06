@@ -200,7 +200,7 @@ export async function get_all_level2(req, res)
         const district_id_t = parseInt(district_id);
         const offset_t = parseInt(offset);
 
-        console.log(city_id_t);
+        console.log(district_id_t);
         console.log(offset_t);
 
         const [district_row] = await db.query(
