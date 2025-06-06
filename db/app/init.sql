@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS roads (  -- 도로명
 CREATE TABLE IF NOT EXISTS addresses ( -- 주소
   id INT AUTO_INCREMENT PRIMARY KEY,
   is_road BOOLEAN DEFAULT 1,
+  city_id INT NOT NULL,
+  district_id INT NOT NULL,
   road_id INT,
   legal_dong_id INT,
   address_num VARCHAR(10) NOT NULL, 
@@ -53,6 +55,8 @@ CREATE TABLE IF NOT EXISTS addresses ( -- 주소
   lng DOUBLE NOT NULL,
   FOREIGN KEY (road_id) REFERENCES roads(id),
   FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id)
+  FOREIGN KEY (city_id) REFERENCES cities(id),
+  FOREIGN KEY (district_id) REFERENCES districts(id)
 );
 
 CREATE TABLE IF NOT EXISTS comments ( -- 댓글
