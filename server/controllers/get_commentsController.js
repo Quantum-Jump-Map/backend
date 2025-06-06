@@ -83,12 +83,12 @@ export async function get_all_level1(req, res)
 {
     try{
     
-        const {city_id_t, offset_t} = req.query;
-        const city_id = parseInt(city_id_t);
-        const offset = parseInt(offset_t);
+        const {city_id, offset} = req.query;
+        const city_id_t = parseInt(city_id_t);
+        const offset_t = parseInt(offset_t);
 
-        console.log(city_id);
-        console.log(offset);
+        console.log(city_id_t);
+        console.log(offset_t);
 
         const [city_row] = await db.query(
             `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
@@ -97,11 +97,11 @@ export async function get_all_level1(req, res)
                 WHERE c.city_id=?
                 ORDER BY c.like_count DESC
                 LIMIT 10
-                OFFSET ?`, [city_id, offset]);
+                OFFSET ?`, [city_id_t, offset_t]);
 
         res.status(201).json({
             data_size: city_row.length,
-            offset: offset+city_row.length,
+            offset: offset_t+city_row.length,
             comments: city_row
         });
         
