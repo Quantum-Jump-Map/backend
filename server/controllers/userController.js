@@ -409,7 +409,7 @@ export async function searchUsers(req, res)
     res.status(200).json({
         token: res.locals.newToken,
         users: result,
-        count: users.length
+        count: result.length
     });
 
     return;
