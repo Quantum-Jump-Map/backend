@@ -392,6 +392,8 @@ export async function searchUsers(req, res)
         token: res.locals.newToken,
         error: "검색어는 최소 2글자 이상"
       });
+
+      return;
     }
 
     const currentUserId = req.user.id;
@@ -402,7 +404,7 @@ export async function searchUsers(req, res)
       FROM users
       WHERE username LIKE ? AND id !=?
       ORDER BY follower_count DESC, total_like_count DESC
-      LIMIT 20`, searchPattern, currentUserId );
+      LIMIT 20`, [searchPattern, currentUserId] );
 
     res.status(200).json({
         token: res.locals.newToken,
