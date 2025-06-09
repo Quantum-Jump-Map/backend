@@ -246,7 +246,7 @@ export async function level3(req, res)   //도로명+구 단위
         const [loc] = await db.query('SELECT * from roads WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
-        const [loc_dong] = await db.query('SELECT * FROM legal_dongs WHERE lng BETWEEEN ? AND ? AND LAT BETWEEN ? AND ?',
+        const [loc_dong] = await db.query('SELECT * FROM legal_dongs WHERE lng BETWEEEN ? AND ? AND lat BETWEEN ? AND ?',
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]
         )
 
