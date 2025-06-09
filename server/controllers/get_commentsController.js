@@ -172,6 +172,14 @@ export async function level2(req, res)   //시군구 단위
 
         for(const l of loc)
         {
+            console.log({
+                mapx: l.lng,
+                mapy: l.lat,
+                district_id: l.id,
+                comments_size: comment_info[l.id].length,
+                comments: comment_info[l.id]
+            });
+            
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
