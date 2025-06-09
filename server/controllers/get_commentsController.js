@@ -531,8 +531,8 @@ export async function get_all_level4(req, res)
                 OFFSET ?`, [address_id_t, offset_t]);
 
         res.status(201).json({
-            data_size: city_row.length,
-            offset: offset_t+city_row.length,
+            data_size: address_row.length,
+            offset: offset_t+address_row.length,
             comments: address_row
         });
         
