@@ -618,7 +618,25 @@ export async function level5(req, res)   //건물번호 단위
 export async function get_all_level5(req, res)
 {
     try{
-    
+        const {address_id, offset} = req.query;
+
+        const address_id_t = parseInt(address_id);
+        const offset_t = parseInt(offset);
+
+        const [address_row] = await db.query(
+            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                FROM comments c
+                JOIN user_db.users u ON u.id=c.user_id
+                WHERE c.address_id=?
+                ORDER BY c.like_count DESC
+                LIMIT 10
+                OFFSET ?`, [address_id_t, offset_t]);
+
+        res.status(201).json({
+            data_size: address_row.length,
+            offset: offset_t+address_row.length,
+            comments: address_row
+        });
         
     } catch(err) {
         
