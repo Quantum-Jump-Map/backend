@@ -373,7 +373,7 @@ export async function get_all_level3(req, res)
 
         if(is_road_t==true){
 
-            const [ret_t] = db.query(
+            const [ret_t] = await db.query(
                 `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
@@ -388,7 +388,7 @@ export async function get_all_level3(req, res)
 
         else{
             
-            const [ret_t] = db.query(
+            const [ret_t] = await db.query(
                 `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
