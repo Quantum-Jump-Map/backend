@@ -231,7 +231,7 @@ export async function get_all_level2(req, res)
     
 }
 
-export async function level3(req, res)   //도로명 단위
+export async function level3(req, res)   //도로명+구 단위 
 {
     try{
         const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
@@ -246,7 +246,11 @@ export async function level3(req, res)   //도로명 단위
         const [loc] = await db.query('SELECT * from roads WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
-        if(loc.length==0){
+        const [loc_dong] = await db.query('SELECT * FROM legal_dongs WHERE lng BETWEEEN ? AND ? AND LAT BETWEEN ? AND ?',
+            [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]
+        )
+
+        if(loc.length==0 && loc_dong.length==0){
             res.status(201).json({
                 data_size: 0,
                 data: []
@@ -258,16 +262,28 @@ export async function level3(req, res)   //도로명 단위
         const road_id_arr = loc.map(c=>c.id);
         const holder = road_id_arr.map(i=>'?').join(', ');
 
+        const dong_id_arr = loc_dong.map(c=>c.id);
+        const holder_dong = dong_id_arr.map(i=>'?').join(', ');
+
         const [db_res] = await db.query(
             `SELECT * from (SELECT c.road_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.road_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
             WHERE c.road_id IN (${holder}) ) ranked
-            WHERE rn<=2
+            WHERE rn<=2 AND c.road_id IS NOT NULL
             `, road_id_arr);
+
+        const [db_res_dong] = await db.query(
+            `SELECT * FROM (SELECT c.legal_dong_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
+            FROM comments c
+            JOIN user_db.users u ON c.user_id=u.id
+            WHERE c.road_id IN (${holder_dong}) ) ranked
+            WHERE rn<=2 AND c.legal_dong_id IS NOT NULL`, dong_id_arr);
         
         let comment_info = {};
+        let comment_info_dong = {};
             
         for(const e of db_res)
         {
@@ -280,6 +296,19 @@ export async function level3(req, res)   //도로명 단위
             });
         }
 
+        for(const e of db_res_dong)
+        {
+            if(!comment_info_dong[e.legal_dong_id]) comment_info[e.legal_dong_id] = [];
+            comment_info[e.legal_dong_id].push({
+                comment: e.comment,
+                posted_by: e.posted_by,
+                posted_at: e.posted_at,
+                like_count: e.like_count
+            });
+        }
+
+
+
         let data = [];
 
         for(const l of loc)
@@ -287,6 +316,20 @@ export async function level3(req, res)   //도로명 단위
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
+                is_road: false,
+                loc_id: l.id,
+                comments_size: comment_info[l.id].length,
+                comments: comment_info[l.id]
+            });
+        }
+
+        for(const l of loc_dong)
+        {
+            data.push({
+                mapx: l.lng,
+                mapy: l.lat,
+                is_road: true,
+                loc_id: l.id,
                 comments_size: comment_info[l.id].length,
                 comments: comment_info[l.id]
             });
