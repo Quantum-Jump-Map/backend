@@ -469,7 +469,7 @@ export async function getFollowStatus(req, res)
 
     const [user] = await db.query(`
       SELECT id FROM users
-      WHERE username=?`, username);
+      WHERE username=?`, [username]);
 
     if(user.length===0)
     {
@@ -486,14 +486,14 @@ export async function getFollowStatus(req, res)
       return res.status(200).json({
         is_following: false,
         is_self: true,
-      token: res.locals.newToken
+        token: res.locals.newToken
       });
     }
 
     const [follow] = await db.query(`
       SELECT id
       FROM follows
-      WHERE follwer_id=? AND followee_id=?`, [currentUserId, user_t]);
+      WHERE follower_id=? AND followee_id=?`, [currentUserId, user_t]);
 
     res.status(200).json({
       is_following: follow.length >0,
