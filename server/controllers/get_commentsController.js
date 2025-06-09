@@ -316,7 +316,7 @@ export async function level3(req, res)   //도로명+구 단위
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
-                is_road: false,
+                is_road: true,
                 loc_id: l.id,
                 comments_size: comment_info[l.id].length,
                 comments: comment_info[l.id]
@@ -328,7 +328,7 @@ export async function level3(req, res)   //도로명+구 단위
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
-                is_road: true,
+                is_road: false,
                 loc_id: l.id,
                 comments_size: comment_info[l.id].length,
                 comments: comment_info[l.id]
