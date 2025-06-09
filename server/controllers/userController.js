@@ -574,7 +574,7 @@ export async function getFollowingList(req, res) {   // 팔로잉 목록 조회 
     const targetUserId = user[0].id;
 
     const [following] = await db.query(`
-      SELECT u.id, u.username, u.profile_comment, u.follower_count, u.total_like_count,
+      SELECT u.id, u.username, u.profile_comment, u.follower_count, u.total_like_count
       FROM follows f
       JOIN users u ON f.followee_id = u.id
       WHERE f.follower_id = ?

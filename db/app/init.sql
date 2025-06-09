@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 CREATE TABLE IF NOT EXISTS follows (  -- follow table
+  id INT AUTO_INCREMENT NOT NULL,
   follower_id INT NOT NULL,
   followee_id INT NOT NULL,
   PRIMARY KEY(follower_id, followee_id)
