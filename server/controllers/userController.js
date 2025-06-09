@@ -435,7 +435,7 @@ export async function updateProfileComment(req, res)
     await db.query(`
       UPDATE users
       SET profile_comment = ? 
-      WHERE id = ?`, profile_comment, userId);
+      WHERE id = ?`, [profile_comment, userId]);
 
     res.status(200).json({
       token: res.locals.newToken,
