@@ -363,9 +363,11 @@ export async function get_all_level3(req, res)
             return;
         }
 
-        const is_road_t = (is_road=='true') ? true: false;
+        const is_road_t = (is_road==='true') ? true: false;
         const loc_id_t = parseInt(loc_id);
         const offset_t = parseInt(offset);
+
+        console.log(is_road_t);
 
         let ret;
 
