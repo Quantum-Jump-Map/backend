@@ -301,8 +301,8 @@ export async function level3(req, res)   //도로명+구 단위
             
         for(const e of db_res)
         {
-            if(!comment_info[e.road_id_arr]) comment_info[e.road_id_arr] = [];
-            comment_info[e.road_id_arr].push({
+            if(!comment_info[e.road_id]) comment_info[e.road_id] = [];
+            comment_info[e.road_id].push({
                 comment: e.comment,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
@@ -312,8 +312,8 @@ export async function level3(req, res)   //도로명+구 단위
 
         for(const e of db_res_dong)
         {
-            if(!comment_info_dong[e.dong_id_arr]) comment_info_dong[e.dong_id_arr] = [];
-            comment_info_dong[e.dong_id_arr].push({
+            if(!comment_info_dong[e.legal_dong_id]) comment_info_dong[e.legal_dong_id] = [];
+            comment_info_dong[e.legal_dong_id].push({
                 comment: e.comment,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
@@ -476,8 +476,8 @@ export async function level4(req, res)   //건물번호 단위
             
         for(const e of db_res)
         {
-            if(!comment_info[e.address_id_arr]) comment_info[e.address_id_arr] = [];
-            comment_info[e.address_id_arr].push({
+            if(!comment_info[e.address_id]) comment_info[e.address_id] = [];
+            comment_info[e.address_id].push({
                 comment: e.comment,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
