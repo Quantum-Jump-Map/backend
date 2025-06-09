@@ -351,7 +351,56 @@ export async function level3(req, res)   //도로명+구 단위
 export async function get_all_level3(req, res)
 {
     try{
-    
+        const {is_road, loc_id, offset} = req.query;
+
+        if(!is_road || !loc_id || !offset)
+        {
+            console.log("error: no field");
+            res.status(401).json({
+                error: "no field"
+            });
+
+            return;
+        }
+
+        const is_road_t = (is_road=='true') ? true: false;
+        const loc_id_t = parseInt(loc_id);
+        const offset_t = parseInt(offset);
+
+        let ret;
+
+        if(is_road_t){
+
+            [ret] = db.query(
+                `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                FROM comments c
+                JOIN user_db.users u ON u.id=c.user_id
+                WHERE c.road_id IS NOT NULL AND c.road_id=?
+                ORDER BY c.created_at DESC
+                LIMIT 10
+                OFFSET ?`, [loc_id_t, offset_t]);
+
+        }
+
+        else{
+            
+            [ret] = db.query(
+                `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                FROM comments c
+                JOIN user_db.users u ON u.id=c.user_id
+                WHERE c.legal_dong_id IS NOT NULL AND c.road_id=?
+                ORDER BY c.created_at DESC
+                LIMIT 10
+                OFFSET ?`, [loc_id_t, offset_t]);
+        }
+
+        res.status(201).json({
+            data_size: ret.length,
+            offset: offset_t+ret.length,
+            comments: ret
+        });
+
+        return;
        
         
     } catch(err) {
