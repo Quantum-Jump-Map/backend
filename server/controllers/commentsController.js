@@ -87,7 +87,8 @@ async function getOrCreateAddress(latitude, longitude) {
 
   if(is_road==true) {  //도로명 주소 
     
-    building_num += `-${ret_address.sub_building_no}`;
+    if(ret_address.sub_building_no)
+      building_num += `-${ret_address.sub_building_no}`;
 
     const [addresses_row] = await db.query('SELECT * FROM addresses WHERE road_id=? AND address_num=?', [RoadOrDongId, building_num]);
     address_id = addresses_row[0]?.id;
@@ -102,7 +103,8 @@ async function getOrCreateAddress(latitude, longitude) {
   }
 
   else {  //지번 주소 
-    building_num += `-${ret_address.sub_address_no}`;
+    if(ret_address.sub_address_no)
+      building_num += `-${ret_address.sub_address_no}`;
 
     const [addresses_row] = await db.query('SELECT * FROM addresses WHERE legal_dong_id=? AND address_num=?', [RoadOrDongId, building_num]);
     address_id = addresses_row[0]?.id;
