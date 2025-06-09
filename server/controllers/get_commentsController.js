@@ -179,6 +179,8 @@ export async function level2(req, res)   //시군구 단위
                 comments_size: comment_info[l.id].length,
                 comments: comment_info[l.id]
             });
+
+            console.log("loc: "+ l);
             
             data.push({
                 mapx: l.lng,
