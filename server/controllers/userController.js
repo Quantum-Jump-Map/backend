@@ -151,7 +151,7 @@ export async function deleteUser(req, res) {    //사용자 정보 삭제 (는 �
 
 export async function getUser(req, res) {   //사용자 정보 가져오기(본인)
 
-  const {password} = req.user;
+  const {password} = req.body;
   const username = req.user.username;
 
   try {
