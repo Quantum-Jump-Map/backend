@@ -102,7 +102,7 @@ export async function editUser(req, res){   //사용자 정보 수정
       return res.status(400).json({ error: '잘못된 비밀번호'});
     }
 
-    const new_hashed_password = bcrypt.hash(new_password ? password: new_password);
+    const new_hashed_password = bcrypt.hash(!new_password ? password: new_password);
 
     await db.query('UPDATE users SET password=?, email=?, birth_date=?, gender=? WHERE id=?',
       [new_hashed_password, email, birth_date, gender, user.id]);
