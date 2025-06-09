@@ -448,7 +448,7 @@ export async function level4(req, res)   //건물번호 단위
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
-        const [loc] = await db.query('SELECT * from addresses WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
+        const [loc] = await db.query('SELECT * from addresses WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ? AND is_road=1', 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
