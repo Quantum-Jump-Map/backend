@@ -279,7 +279,7 @@ export async function level3(req, res)   //도로명+구 단위
             (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
             FROM comments c
             JOIN user_db.users u ON c.user_id=u.id
-            WHERE c.road_id IN (${holder_dong}) ) ranked
+            WHERE c.legal_dong_id IN (${holder_dong}) ) ranked
             WHERE rn<=2 AND c.legal_dong_id IS NOT NULL`, dong_id_arr);
         
         let comment_info = {};
