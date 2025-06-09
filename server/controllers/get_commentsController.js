@@ -330,8 +330,8 @@ export async function level3(req, res)   //도로명+구 단위
                 mapy: l.lat,
                 is_road: false,
                 loc_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comment_info_dong[l.id].length,
+                comments: comment_info_dong[l.id]
             });
         }
 
