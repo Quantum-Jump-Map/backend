@@ -142,6 +142,8 @@ export async function level2(req, res)   //시군구 단위
             return;
         }
 
+        console.log(loc.length);
+
         const district_id_arr = loc.map(c=>c.id);
         const holder = district_id_arr.map(i=>'?').join(', ');
 
