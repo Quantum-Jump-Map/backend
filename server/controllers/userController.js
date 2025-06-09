@@ -151,7 +151,7 @@ export async function deleteUser(req, res) {    //사용자 정보 삭제 (는 �
 
 export async function getUser(req, res) {   //사용자 정보 가져오기(본인)
 
-  const {req_password} = req.user;
+  const {password} = req.user;
   const username = req.user.username;
 
   try {
@@ -163,7 +163,7 @@ export async function getUser(req, res) {   //사용자 정보 가져오기(본�
 
     const user = rows[0];
 
-    const isMatch = await bcrypt.compare(req_password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if(!isMatch || req.user.id != user.id) {
       return res.status(400).json({ error: '잘못된 비밀번호'});
@@ -173,7 +173,7 @@ export async function getUser(req, res) {   //사용자 정보 가져오기(본�
       token: res.locals.newToken,
       user: {
         id: user.username,
-        password: req_password,
+        password: password,
         name: user.name,
         email: user.email,
         birth_date: user.birth_date,
