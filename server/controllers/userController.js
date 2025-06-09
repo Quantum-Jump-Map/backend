@@ -193,6 +193,9 @@ export async function followUser(req, res) {  //사용자 팔로우 / 취소
   if(!followee_username)
   {
     console.log("error: no user defined");
+    res.status(401).json({
+      error: err
+    });
     return;
   }
 
@@ -202,6 +205,10 @@ export async function followUser(req, res) {  //사용자 팔로우 / 취소
     if(followee_id_temp.length==0)
     {
       console.log("error: no user found");
+      res.status(401).json({
+      error: err
+    });
+
       return;
     }
     const followee_id = followee_id_temp[0]?.id;
@@ -209,6 +216,9 @@ export async function followUser(req, res) {  //사용자 팔로우 / 취소
     if(followee_id === req.user.id)
     {
       console.log("error: Following oneself is prohibited");
+      res.status(401).json({
+      error: err
+    });
       return;
     }
 
