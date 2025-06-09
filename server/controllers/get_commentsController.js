@@ -270,8 +270,8 @@ export async function level3(req, res)   //도로명+구 단위
             (PARTITION BY c.road_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
-            WHERE c.road_id IN (${holder}) ) ranked
-            WHERE rn<=2 AND road_id IS NOT NULL
+            WHERE c.road_id IN (${holder}) AND c.road_id IS NOT NULL ) ranked
+            WHERE rn<=2
             `, road_id_arr);
 
         const [db_res_dong] = await db.query(
@@ -279,8 +279,8 @@ export async function level3(req, res)   //도로명+구 단위
             (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
             FROM comments c
             JOIN user_db.users u ON c.user_id=u.id
-            WHERE c.legal_dong_id IN (${holder_dong}) ) ranked
-            WHERE rn<=2 AND legal_dong_id IS NOT NULL`, dong_id_arr);
+            WHERE c.legal_dong_id IN (${holder_dong}) AND c.legal_dong_id IS NOT NULL ) ranked
+            WHERE rn<=2`, dong_id_arr);
         
         let comment_info = {};
         let comment_info_dong = {};
