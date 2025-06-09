@@ -299,7 +299,7 @@ export async function level3(req, res)   //도로명+구 단위
         for(const e of db_res_dong)
         {
             if(!comment_info_dong[e.legal_dong_id]) comment_info_dong[e.legal_dong_id] = [];
-            comment_info[e.legal_dong_id].push({
+            comment_info_dong[e.legal_dong_id].push({
                 comment: e.comment,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
