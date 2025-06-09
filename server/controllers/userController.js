@@ -531,12 +531,10 @@ export async function getFollowersList(req, res) {   // 팔로워 목록 조회 
     const targetUserId = user[0].id;
 
     const [followers] = await db.query(`
-      SELECT u.id, u.username, u.profile_comment, u.follower_count, u.total_like_count,
-             f.created_at as followed_at
+      SELECT u.id, u.username, u.profile_comment, u.follower_count, u.total_like_count
       FROM follows f
       JOIN users u ON f.follower_id = u.id
       WHERE f.followee_id = ?
-      ORDER BY f.created_at DESC
       LIMIT 20 OFFSET ?
     `, [targetUserId, offsetInt]);
 
@@ -577,11 +575,9 @@ export async function getFollowingList(req, res) {   // 팔로잉 목록 조회 
 
     const [following] = await db.query(`
       SELECT u.id, u.username, u.profile_comment, u.follower_count, u.total_like_count,
-             f.created_at as followed_at
       FROM follows f
       JOIN users u ON f.followee_id = u.id
       WHERE f.follower_id = ?
-      ORDER BY f.created_at DESC
       LIMIT 20 OFFSET ?
     `, [targetUserId, offsetInt]);
 
