@@ -369,7 +369,7 @@ export async function get_all_level3(req, res)
 
         let ret;
 
-        if(is_road_t){
+        if(is_road_t==true){
 
             [ret] = db.query(
                 `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
