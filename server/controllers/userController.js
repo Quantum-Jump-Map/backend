@@ -496,7 +496,7 @@ export async function getFollowStatus(req, res)
       WHERE follower_id=? AND followee_id=?`, [currentUserId, user_t]);
 
     res.status(200).json({
-      is_following: follow.length >0,
+      is_following: follow.length > 0 ? true : false,
       is_self: false,
       token: res.locals.newToken
     });
