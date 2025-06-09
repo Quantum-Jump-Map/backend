@@ -116,6 +116,7 @@ export async function get_all_level1(req, res)
     }
 }
 
+
 export async function level2(req, res)   //시군구 단위
 {
     try{
@@ -150,21 +151,22 @@ export async function level2(req, res)   //시군구 단위
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
             WHERE c.district_id IN (${holder}) ) ranked
-            WHERE rn<=2
-            `, district_id_arr);
+            WHERE rn<=2`, district_id_arr);
         
         let comment_info = {};
             
         for(const e of db_res)
         {
-            if(!comment_info[e.district_id_arr]) comment_info[e.district_id_arr] = [];
-            comment_info[e.district_id_arr].push({
+            if(!comment_info[e.district_id]) comment_info[e.district_id] = [];
+            comment_info[e.district_id].push({
                 comment: e.comment,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
             });
         }
+
+        console.log(comment_info);
 
         let data = [];
 
