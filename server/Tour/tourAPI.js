@@ -17,7 +17,8 @@ export async function get_event_num(cur_date)
                 MobileOS: 'ETC',
                 MobileApp: 'map-society',
                 serviceKey: tourAPI_TOKEN,
-                eventStartDate: 'cur_date'
+                eventStartDate: 'cur_date',
+                _type: 'json'
             }
         });
 
@@ -41,7 +42,8 @@ export async function get_event_init(cur_date, pagenum)
                 MobileOS: 'ETC',
                 MobileApp: 'map-society',
                 serviceKey: tourAPI_TOKEN,
-                eventStartDate: cur_date
+                eventStartDate: cur_date,
+                _type: 'json'
             }
         });
 
@@ -66,7 +68,8 @@ export async function refresh_event(cur_date, pagenum)
                 MobileApp: 'map-society',
                 serviceKey: tourAPI_TOKEN,
                 eventStartDate: cur_date,
-                modifiedtime: cur_date
+                modifiedtime: cur_date,
+                _type: 'json'
             }
         });
 
