@@ -137,5 +137,8 @@ CREATE TABLE IF NOT EXISTS festivals (
   first_image VARCHAR(255),
   first_image2 VARCHAR(255),
   mapx DOUBLE NOT NULL,
-  mapy DOUBLE NOT NULL
+  mapy DOUBLE NOT NULL,
+  createdtime DATETIME NOT NULL,
+  modifiedtime DATETIME NOT NULL,
+  telephone VARCHAR(100)
 );
