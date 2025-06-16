@@ -46,7 +46,7 @@ export async function sync_event()
 
                         if(event_t.length!=0)  //먄약 해당 event가 있으면
                         {
-                            if(event_t.modifiedtime!=item.modifiedtime)
+                            if(event_t[0].modifiedtime!=item.modifiedtime)
                             {
                                 await db.execute(`
                                     UPDATE festivals
