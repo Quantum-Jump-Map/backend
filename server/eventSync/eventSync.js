@@ -8,7 +8,7 @@ export async function sync_event()
 {
     try{
     
-        const cur_time = moment.tz('Asia.Seoul').format('YYYYMMDD');
+        const cur_time = moment.tz('Asia/Seoul').format('YYYYMMDD');
 
         const total_event = await get_event_num(cur_time);
 
