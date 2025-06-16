@@ -16,7 +16,7 @@ export async function get_event_num(cur_date)
                 numOfRows: '0',
                 MobileOS: 'ETC',
                 MobileApp: 'map-society',
-                serviceKey: TourAPI_TOKEN,
+                serviceKey: process.env.TourAPI_TOKEN,
                 eventStartDate: cur_date,
                 _type: 'json'
             }
@@ -41,7 +41,7 @@ export async function get_event(cur_date, pagenum)
                 pageNo: pagenum,
                 MobileOS: 'ETC',
                 MobileApp: 'map-society',
-                serviceKey: TourAPI_TOKEN,
+                serviceKey: process.env.TourAPI_TOKEN,
                 eventStartDate: cur_date,
                 _type: 'json'
             }
