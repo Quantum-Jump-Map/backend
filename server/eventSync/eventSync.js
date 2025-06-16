@@ -1,4 +1,4 @@
-import cron from 'node-cron'
+import cron from 'node-cron';
 import { get_event_num, get_event} from '../Tour/tourAPI';
 import db from '../db/eventDb';
 import moment from 'moment-timezone';
