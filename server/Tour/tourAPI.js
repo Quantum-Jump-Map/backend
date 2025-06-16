@@ -31,7 +31,7 @@ export async function get_event_num(cur_date)
     }
 }
 
-export async function get_event_init(cur_date, pagenum)
+export async function get_event(cur_date, pagenum)
 {
     try {
 
@@ -55,30 +55,3 @@ export async function get_event_init(cur_date, pagenum)
         return null;
     }
 }
-
-export async function refresh_event(cur_date, pagenum)
-{
-    try{
-
-        const res = await tour.get('/searchFestival2', {
-            params: {
-                numOfRows: '100',
-                pageNo: pagenum,
-                MobileOS: 'ETC',
-                MobileApp: 'map-society',
-                serviceKey: tourAPI_TOKEN,
-                eventStartDate: cur_date,
-                modifiedtime: cur_date,
-                _type: 'json'
-            }
-        });
-
-        return res?.data?.response?.item?.items;
-
-    } catch(err){
-
-        console.error("error: ", err);
-        return null;
-    }
-}
-
