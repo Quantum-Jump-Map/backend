@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS festivals (
   road_id INT,
   legal_dong_id INT,
   address_id INT NOT NULL,
-  is_road BOOLEAN DEFAULT 1
+  is_road BOOLEAN DEFAULT 1,
   event_start_date DATE NOT NULL,
   event_end_date DATE NOT NULL,
   first_image VARCHAR(255),
