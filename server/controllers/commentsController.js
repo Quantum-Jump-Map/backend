@@ -6,7 +6,7 @@ export async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
   const ret_address_t = await CoordToAddress(latitude, longitude);
 
-  console.log(ret_address_t);
+  //console.log(ret_address_t);
 
   if(!ret_address_t)
   {
