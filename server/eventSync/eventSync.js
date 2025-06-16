@@ -8,7 +8,7 @@ export async function sync_event()
 {
     try{
     
-        const db = get_db_pool();
+        const db = await get_db_pool();
 
         const cur_time = moment.tz('Asia/Seoul').format('YYYYMMDD');
 
