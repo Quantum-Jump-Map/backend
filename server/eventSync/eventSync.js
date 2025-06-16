@@ -95,11 +95,11 @@ export async function __init_eventdbsync()
             SELECT * FROM festivals`);
 
         if(res.length==0)
-            sync_event();
+            await sync_event();
 
-        cron.schedule('0 0,12 * * *', ()=>{
-            sync_event();
-        })
+        cron.schedule('0 0,12 * * *', async ()=>{
+            await sync_event();
+        });
     } catch(err) {
         console.log("init error");
         return;
