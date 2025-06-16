@@ -100,7 +100,7 @@ export async function __init_eventdbsync()
             await sync_event();
         });
     } catch(err) {
-        console.log("init error");
+        console.log("init error: ", err);
         return;
     }
 }
