@@ -141,7 +141,7 @@ export async function level2(req, res)   //시군구 단위
             SELECT d.*, c.name AS city_name
             FROM districts d
             JOIN cities c ON d.city_id=c.id 
-            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?`, 
+            WHERE d.lng BETWEEN ? AND ? AND d.lat BETWEEN ? AND ?`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
@@ -273,7 +273,7 @@ export async function level3(req, res)   //도로명+구 단위
             FROM roads r
             JOIN districts d ON d.id=r.district_id
             JOIN cities c ON c.id=r.city_id
-            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?`, 
+            WHERE r.lng BETWEEN ? AND ? AND r.lat BETWEEN ? AND ?`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         const [loc_dong] = await db.query(`
@@ -281,7 +281,7 @@ export async function level3(req, res)   //도로명+구 단위
             FROM legal_dongs l 
             JOIN districts d ON d.id=l.district_id
             JOIN cities c ON c.id=l.city_id
-            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?`,
+            WHERE l.lng BETWEEN ? AND ? AND l.lat BETWEEN ? AND ?`,
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]
         )
 
@@ -495,7 +495,7 @@ export async function level4(req, res)   //건물번호 단위
             LEFT JOIN roads r ON r.id=a.road_id
             JOIN districts d ON d.id=a.district_id
             JOIN cities c ON c.id=a.city_id
-            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ? AND is_road=1`, 
+            WHERE a.lng BETWEEN ? AND ? AND a.lat BETWEEN ? AND ? AND a.is_road=1`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
@@ -623,7 +623,7 @@ export async function level5(req, res)   //건물번호 단위
             LEFT JOIN legal_dongs l ON l.id=a.legal_dong_id
             JOIN districts d ON d.id=a.district_id
             JOIN cities c ON c.id=a.city_id
-            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ? AND is_road=1`, 
+            WHERE a.lng BETWEEN ? AND ? AND a.lat BETWEEN ? AND ?`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
