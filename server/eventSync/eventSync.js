@@ -95,6 +95,7 @@ export async function sync_event()
 
         console.log("insert_count: ", loop_count);
         console.log("no coords count: ", no_coords);
+        console.log("total event: ", total_event);
 
     } catch (err) {
         console.error("error in sync func\n", err);
