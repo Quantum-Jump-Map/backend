@@ -49,9 +49,9 @@ export async function get_event(cur_date, pagenum)
             }
         });
 
-        console.log(res?.data?.response?.body?.item?.items);
+        console.log(res?.data?.response);
 
-        return res?.data?.response;
+        return res?.data?.response?.body?.item?.items;
     
     } catch(err) {
 
