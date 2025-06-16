@@ -22,7 +22,7 @@ export async function get_event_num(cur_date)
             }
         });
 
-        return res?.data?.response?.body?.totalCount;
+        return res;
 
     } catch(err){
         
