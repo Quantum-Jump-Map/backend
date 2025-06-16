@@ -6,7 +6,7 @@ export async function get_db_pool()
 {
   let pool=null;
   
-  if(!pool){
+  if(pool==null){
   
     pool = await mysql.createPool({
       host: process.env.DB_HOST,
