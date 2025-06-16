@@ -57,12 +57,16 @@ export async function level1(req, res)  // 시도 단위
 
         for(const l of loc)
         {
+            const comments_temp = comment_info[l.id] || [];
+            if(!comments_temp || comments_temp.length === 0)
+                continue;
+            
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
                 city_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
         }
 
@@ -172,14 +176,19 @@ export async function level2(req, res)   //시군구 단위
 
         let data = [];
 
-        for(const l of loc)
+        for(const l of loc) //디버깅용 
         {
+            const comments_temp = comment_info[l.id] || [];
+
+            if(!comments_temp || comments_temp.length === 0)
+                continue;
+
             console.log({
                 mapx: l.lng,
                 mapy: l.lat,
                 district_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
 
             console.log("loc: "+ l);
@@ -188,8 +197,8 @@ export async function level2(req, res)   //시군구 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 district_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
         }
 
@@ -327,25 +336,33 @@ export async function level3(req, res)   //도로명+구 단위
 
         for(const l of loc)
         {
+            const comments_temp = comment_info[l.id] || [];
+            if(!comments_temp || comments_temp.length === 0)
+                continue;
+            
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
                 is_road: true,
                 loc_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
         }
 
         for(const l of loc_dong)
         {
+            const comments_temp = comment_info_dong[l.id] || [];
+            if(!comments_temp)
+                continue;
+            
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
                 is_road: false,
                 loc_id: l.id,
-                comments_size: comment_info_dong[l.id].length,
-                comments: comment_info_dong[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
         }
 
@@ -489,12 +506,16 @@ export async function level4(req, res)   //건물번호 단위
 
         for(const l of loc)
         {
+            const comments_temp = comment_info[l.id] || [];
+            if(!comments_temp || comments_temp.length === 0)
+                continue;
+            
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
                 address_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
         }
 
@@ -600,12 +621,16 @@ export async function level5(req, res)   //건물번호 단위
 
         for(const l of loc)
         {
+            const comments_temp = comment_info[l.id] || [];
+            if(!comments_temp || comments_temp.length === 0)
+                continue;
+            
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
                 address_id: l.id,
-                comments_size: comment_info[l.id].length,
-                comments: comment_info[l.id]
+                comments_size: comments_temp.length,
+                comments: comments_temp
             });
         }
 
