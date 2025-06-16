@@ -65,6 +65,9 @@ export async function level1(req, res)  // 시도 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 city_id: l.id,
+                address: {
+                    city: l.name
+                },
                 comments_size: comments_temp.length,
                 comments: comments_temp
             });
@@ -134,7 +137,11 @@ export async function level2(req, res)   //시군구 단위
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
-        const [loc] = await db.query('SELECT * from districts WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
+        const [loc] = await db.query(`
+            SELECT d.*, c.name AS city_name
+            FROM districts d
+            JOIN cities c ON d.city_id=c.id 
+            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
@@ -176,27 +183,22 @@ export async function level2(req, res)   //시군구 단위
 
         let data = [];
 
-        for(const l of loc) //디버깅용 
+        for(const l of loc) 
         {
             const comments_temp = comment_info[l.id] || [];
 
             if(!comments_temp || comments_temp.length === 0)
                 continue;
 
-            console.log({
-                mapx: l.lng,
-                mapy: l.lat,
-                district_id: l.id,
-                comments_size: comments_temp.length,
-                comments: comments_temp
-            });
-
-            console.log("loc: "+ l);
             
             data.push({
                 mapx: l.lng,
                 mapy: l.lat,
                 district_id: l.id,
+                address: {
+                    city: l.city_name,
+                    district: l.name
+                },
                 comments_size: comments_temp.length,
                 comments: comments_temp
             });
@@ -266,10 +268,20 @@ export async function level3(req, res)   //도로명+구 단위
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
-        const [loc] = await db.query('SELECT * from roads WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
+        const [loc] = await db.query(`
+            SELECT r.*, d.name AS district_name, c.name AS city_name
+            FROM roads r
+            JOIN districts d ON d.id=r.district_id
+            JOIN cities c ON c.id=r.city_id
+            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
-        const [loc_dong] = await db.query('SELECT * FROM legal_dongs WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?',
+        const [loc_dong] = await db.query(`
+            SELECT l.*, d.name AS district_name, c.name AS city_name
+            FROM legal_dongs l 
+            JOIN districts d ON d.id=l.district_id
+            JOIN cities c ON c.id=l.city_id
+            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?`,
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]
         )
 
@@ -344,6 +356,12 @@ export async function level3(req, res)   //도로명+구 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 is_road: true,
+                address: {
+                    city: l.city_name,
+                    district: l.district_name,
+                    legal_dong: null,
+                    road: l.name
+                },
                 loc_id: l.id,
                 comments_size: comments_temp.length,
                 comments: comments_temp
@@ -360,6 +378,12 @@ export async function level3(req, res)   //도로명+구 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 is_road: false,
+                address: {
+                    city: l.city_name,
+                    district: l.district_name,
+                    legal_dong: l.name,
+                    road: null
+                },
                 loc_id: l.id,
                 comments_size: comments_temp.length,
                 comments: comments_temp
@@ -465,7 +489,13 @@ export async function level4(req, res)   //건물번호 단위
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
-        const [loc] = await db.query('SELECT * from addresses WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ? AND is_road=1', 
+        const [loc] = await db.query(`
+            SELECT a.*, r.name AS road_name, d.name AS district_name, c.name AS city_name
+            FROM addresses a
+            LEFT JOIN roads r ON r.id=a.road_id
+            JOIN districts d ON d.id=a.district_id
+            JOIN cities c ON c.id=a.city_id
+            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ? AND is_road=1`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
@@ -514,6 +544,12 @@ export async function level4(req, res)   //건물번호 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 address_id: l.id,
+                address: {
+                    city: l.city_name,
+                    district: l.district_name,
+                    roads: l.road_name,
+                    building_num: l.address_num
+                },
                 comments_size: comments_temp.length,
                 comments: comments_temp
             });
@@ -580,7 +616,14 @@ export async function level5(req, res)   //건물번호 단위
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
-        const [loc] = await db.query('SELECT * from addresses WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ?', 
+        const [loc] = await db.query(`
+            SELECT a.*, r.name AS road_name, d.name AS district_name, c.name AS city_name, l.name AS legal_dong_name
+            FROM addresses a
+            LEFT JOIN roads r ON r.id=a.road_id
+            LEFT JOIN legal_dongs l ON l.id=a.legal_dong_id
+            JOIN districts d ON d.id=a.district_id
+            JOIN cities c ON c.id=a.city_id
+            WHERE lng BETWEEN ? AND ? AND lat BETWEEN ? AND ? AND is_road=1`, 
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]);
 
         if(loc.length==0){
@@ -629,6 +672,13 @@ export async function level5(req, res)   //건물번호 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 address_id: l.id,
+                address: {
+                    city: l.city_name,
+                    district: l.district_name,
+                    roads: l.road_name || null,
+                    legal_dong: l.legal_dong_name || null,
+                    building_num: l.address_num
+                },
                 comments_size: comments_temp.length,
                 comments: comments_temp
             });
