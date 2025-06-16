@@ -17,6 +17,7 @@ export async function sync_event()
         const loop_num = Math.ceil(parseInt(total_event)/100);
 
         let loop_count = 0;
+        let no_coords = 0;
 
         for(let pagenum =0; pagenum<loop_num; pagenum++)
         {
@@ -27,6 +28,11 @@ export async function sync_event()
                 for(const item of event_t) {
                     try{
                         
+                        if(item.mapx==null || item.mapy==null)
+                        {
+                            no_coords++;
+                        }
+
                         const {is_road, city_id, district_id, RoadOrDongId, address_id} = await getOrCreateAddress(item.mapy, item.mapx);
 
                         if(!is_road || !city_id || !district_id ||!RoadOrDongId || !address_id)
@@ -88,6 +94,7 @@ export async function sync_event()
         }
 
         console.log("insert_count: ", loop_count);
+        console.log("no coords count: ", no_coords);
 
     } catch (err) {
         console.error("error in sync func\n", err);
