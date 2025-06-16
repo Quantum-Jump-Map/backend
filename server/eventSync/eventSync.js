@@ -35,7 +35,7 @@ export async function sync_event()
 
                         const {is_road, city_id, district_id, RoadOrDongId, address_id} = await getOrCreateAddress(item.mapy, item.mapx);
 
-                        if(!is_road || !city_id || !district_id ||!RoadOrDongId || !address_id)
+                        if(!city_id || !district_id ||!RoadOrDongId || !address_id || is_road==null)
                         {
                             console.log("error: null");
                             console.log(is_road);
