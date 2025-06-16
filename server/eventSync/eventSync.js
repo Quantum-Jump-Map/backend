@@ -16,6 +16,8 @@ export async function sync_event()
 
         const loop_num = Math.ceil(parseInt(total_event)/100);
 
+        let loop_count = 0;
+
         for(let pagenum =0; pagenum<loop_num; pagenum++)
         {
             try{
@@ -48,6 +50,7 @@ export async function sync_event()
 
                         if(event_t.length!=0)  //먄약 해당 event가 있으면
                         {
+                            
                             if(event_t[0].modifiedtime!=item.modifiedtime)
                             {
                                 await db.execute(`
@@ -57,9 +60,10 @@ export async function sync_event()
                                     WHERE content_id=?`,
                                     [item.title, city_id, district_id, road_id, legal_dong_id, address_id, is_road, item.eventstartdate, item.eventenddate,
                                     item.firstimage, item.firstimage2, item.mapx, item.mapy, item.createdtime, item.modifiedtime, item.tel, item.contentid]);
-
-                                continue;
                             }
+
+                            loop_count++;
+                            continue;
                         }
 
                         await db.execute(`
@@ -69,6 +73,8 @@ export async function sync_event()
                             VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
                             [item.contentid, item.title, city_id, district_id, road_id, legal_dong_id, address_id, is_road, item.eventstartdate, item.eventenddate,
                                 item.firstimage, item.firstimage2, item.mapx, item.mapy, item.createdtime, item.modifiedtime, item.tel]);
+
+                        loop_count++;
 
                     } catch(err) {
                         console.error("error in const item of event_t \n", err);
@@ -80,6 +86,8 @@ export async function sync_event()
                 console.error("error: get_event error \n", err);
             }
         }
+
+        console.log("insert_count: ", loop_count);
 
     } catch (err) {
         console.error("error in sync func\n", err);
