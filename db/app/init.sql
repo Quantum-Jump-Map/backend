@@ -124,8 +124,8 @@ CREATE DATABASE IF NOT EXISTS event_db;
 USE event_db;
 
 CREATE TABLE IF NOT EXISTS festivals (
-  content_id INT(20) PRIMARY KEY, -- TourAPI 고유값
-  title VARCHAR(255) NOT NULL,
+  content_id BIGINT PRIMARY KEY, -- TourAPI 고유값
+  title TEXT NOT NULL,
   city_id INT NOT NULL,
   district_id INT NOT NULL,
   road_id INT,
@@ -134,11 +134,11 @@ CREATE TABLE IF NOT EXISTS festivals (
   is_road BOOLEAN DEFAULT 1,
   event_start_date DATE NOT NULL,
   event_end_date DATE NOT NULL,
-  first_image VARCHAR(255),
-  first_image2 VARCHAR(255),
+  first_image TEXT,
+  first_image2 TEXT,
   mapx DOUBLE NOT NULL,
   mapy DOUBLE NOT NULL,
   createdtime DATETIME NOT NULL,
   modifiedtime DATETIME NOT NULL,
-  telephone VARCHAR(100)
+  telephone TEXT
 );
