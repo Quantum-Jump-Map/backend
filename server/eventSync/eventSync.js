@@ -52,9 +52,9 @@ export async function sync_event()
                                     UPDATE festivals
                                     SET title=?, city_id=?, district_id=?, road_id=?, legal_dong_id=?, address_id=?, is_road=?, event_start_date=?,
                                     event_end_date=?, first_image=?, first_image2=?, mapx=?, mapy=?, createdtime=?, modifiedtime=?, telephone=?
-                                    WHERE content_id=?, 
+                                    WHERE content_id=?`
                                     [item.title, city_id, district_id, road_id, legal_dong_id, address_id, is_road, item.eventstartdate, item.eventenddate,
-                                    item.firstimage, item.firstimage2, item.mapx, item.mapy, item.createdtime, item.modifiedtime, item.tel, item.contentid]`);
+                                    item.firstimage, item.firstimage2, item.mapx, item.mapy, item.createdtime, item.modifiedtime, item.tel, item.contentid]);
 
                                 continue;
                             }
