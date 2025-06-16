@@ -18,7 +18,7 @@ export async function sync_event()
         {
             try{
         
-                const event_t = await get_event(cur_time, i);
+                const event_t = await get_event(cur_time, pagenum);
 
                 for(const item of event_t) {
                     try{
