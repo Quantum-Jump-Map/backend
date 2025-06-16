@@ -49,7 +49,7 @@ export async function get_event(cur_date, pagenum)
             }
         });
 
-        console.log(res?.data?.response);
+        //console.log(res?.data?.response);
 
         return res?.data?.response?.body?.items?.item;
     
