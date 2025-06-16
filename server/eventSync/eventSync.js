@@ -38,6 +38,11 @@ export async function sync_event()
                         if(!is_road || !city_id || !district_id ||!RoadOrDongId || !address_id)
                         {
                             console.log("error: null");
+                            console.log(is_road);
+                            console.log(city_id);
+                            console.log(district_id);
+                            console.log(RoadOrDongId);
+                            console.log(address_id);
                             continue;
                         }
 
