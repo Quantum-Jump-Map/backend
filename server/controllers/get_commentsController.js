@@ -353,7 +353,7 @@ export async function level3(req, res)   //도로명+구 단위
         for(const l of loc_dong)
         {
             const comments_temp = comment_info_dong[l.id] || [];
-            if(!comments_temp)
+            if(!comments_temp || comments_temp.length === 0)
                 continue;
             
             data.push({
