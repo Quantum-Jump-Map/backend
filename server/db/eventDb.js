@@ -4,11 +4,11 @@ dotenv.config();
 
 export async function get_db_pool()
 {
-  let pool;
+  let pool=null;
   
   if(!pool){
   
-    const pool = await mysql.createPool({
+    pool = await mysql.createPool({
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
       user: process.env.DB_USER,
