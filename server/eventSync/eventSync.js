@@ -91,11 +91,6 @@ export async function sync_event()
 export async function __init_eventdbsync()
 {
     try{
-    
-        const db = get_db_pool();
-
-        const [res] = await db.query(`
-            SELECT * FROM festivals`);
 
         await sync_event();
 
