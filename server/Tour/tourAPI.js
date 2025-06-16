@@ -22,9 +22,9 @@ export async function get_event_num(cur_date)
             }
         });
 
-        console.log("res_num: ", res);
+        console.log("res_num: ", res?.data?.response?.body?.totalCount);
 
-        return res;
+        return parseInt(res?.data?.response?.body?.totalCount);
 
     } catch(err){
         
