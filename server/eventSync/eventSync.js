@@ -20,8 +20,7 @@ export async function sync_event()
         
                 const event_t = await get_event(cur_time, i);
 
-                for(const item of event_t)
-                {
+                for(const item of event_t) {
                     try{
                         
                         const {is_road, city_id, district_id, RoadOrDongId, address_id} = await getOrCreateAddress(item.mapy, item.mapx);
