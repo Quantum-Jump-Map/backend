@@ -2,9 +2,10 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 dotenv.config();
 
+let pool = null;
+
 export async function get_db_pool()
 {
-  let pool=null;
   
   if(pool==null){
   
