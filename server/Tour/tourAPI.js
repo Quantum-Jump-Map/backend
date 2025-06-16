@@ -47,6 +47,8 @@ export async function get_event(cur_date, pagenum)
             }
         });
 
+        console.log(res?.data?.response?.item?.items);
+
         return res?.data?.response?.item?.items;
     
     } catch(err) {
