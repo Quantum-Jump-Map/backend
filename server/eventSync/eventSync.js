@@ -93,8 +93,7 @@ export async function __init_eventdbsync()
         const [res] = await db.query(`
             SELECT * FROM festivals`);
 
-        if(res.length==0)
-            await sync_event();
+        await sync_event();
 
         cron.schedule('0 0,12 * * *', async ()=>{
             await sync_event();
