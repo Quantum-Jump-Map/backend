@@ -1,8 +1,8 @@
 import cron from 'node-cron';
-import { get_event_num, get_event} from '../Tour/tourAPI';
-import db from '../db/eventDb';
+import { get_event_num, get_event} from '../Tour/tourAPI.js';
+import db from '../db/eventDb.js';
 import moment from 'moment-timezone';
-import { getOrCreateAddress } from '../controllers/commentsController';
+import { getOrCreateAddress } from '../controllers/commentsController.js';
 
 export async function sync_event()
 {
