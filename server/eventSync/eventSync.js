@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { get_event_num, get_event} from '../Tour/tourAPI.js';
-import db from '../db/eventDb.js';
+import {get_db_pool} from '../db/eventDb.js';
 import moment from 'moment-timezone';
 import { getOrCreateAddress } from '../controllers/commentsController.js';
 
@@ -8,6 +8,8 @@ export async function sync_event()
 {
     try{
     
+        const db = get_db_pool();
+
         const cur_time = moment.tz('Asia/Seoul').format('YYYYMMDD');
 
         const total_event = await get_event_num(cur_time);
@@ -90,6 +92,8 @@ export async function __init_eventdbsync()
 {
     try{
     
+        const db = get_db_pool();
+        
         const [res] = await db.query(`
             SELECT * FROM festivals`);
 
