@@ -19,7 +19,7 @@ export async function sync_event()
         let loop_count = 0;
         let no_coords = 0;
 
-        for(let pagenum =0; pagenum<loop_num; pagenum++)
+        for(let pagenum =1; pagenum<=loop_num; pagenum++)
         {
             try{
         
