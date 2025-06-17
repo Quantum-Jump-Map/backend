@@ -254,8 +254,10 @@ export async function editComment(req, res) {
 }
 
 export async function likeComment(req, res) {
-  const {comment_id} = req.body;
+  const {id} = req.body;
   const user_id = req.user.id;
+
+  const comment_id = id;
 
   try{
     const [like_rows] = await db.query("SELECT * FROM comment_likes WHERE comment_id=? AND user_id =?", [comment_id, user_id]);

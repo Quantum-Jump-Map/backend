@@ -32,7 +32,7 @@ export async function level1(req, res)  // 시도 단위
         const holder = city_id_arr.map(i=>'?').join(', ');
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.city_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from (SELECT c.city_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.city_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
@@ -47,6 +47,7 @@ export async function level1(req, res)  // 시도 단위
             if(!comment_info[e.city_id]) comment_info[e.city_id] = [];
             comment_info[e.city_id].push({
                 comment: e.comment,
+                comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
@@ -98,7 +99,7 @@ export async function get_all_level1(req, res)
         console.log(offset_t);
 
         const [city_row] = await db.query(
-            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
                 WHERE c.city_id=?
@@ -159,7 +160,7 @@ export async function level2(req, res)   //시군구 단위
         const holder = district_id_arr.map(i=>'?').join(', ');
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.district_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from (SELECT c.district_id, c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.district_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
@@ -173,6 +174,7 @@ export async function level2(req, res)   //시군구 단위
             if(!comment_info[e.district_id]) comment_info[e.district_id] = [];
             comment_info[e.district_id].push({
                 comment: e.comment,
+                comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
@@ -229,7 +231,7 @@ export async function get_all_level2(req, res)
         console.log(offset_t);
 
         const [district_row] = await db.query(
-            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
                 WHERE c.district_id=?
@@ -301,7 +303,7 @@ export async function level3(req, res)   //도로명+구 단위
         const holder_dong = dong_id_arr.map(i=>'?').join(', ');
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.road_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from (SELECT c.road_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.road_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
@@ -310,7 +312,7 @@ export async function level3(req, res)   //도로명+구 단위
             `, road_id_arr);
 
         const [db_res_dong] = await db.query(
-            `SELECT * FROM (SELECT c.legal_dong_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * FROM (SELECT c.legal_dong_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
             FROM comments c
             JOIN user_db.users u ON c.user_id=u.id
@@ -325,6 +327,7 @@ export async function level3(req, res)   //도로명+구 단위
             if(!comment_info[e.road_id]) comment_info[e.road_id] = [];
             comment_info[e.road_id].push({
                 comment: e.comment,
+                comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
@@ -336,6 +339,7 @@ export async function level3(req, res)   //도로명+구 단위
             if(!comment_info_dong[e.legal_dong_id]) comment_info_dong[e.legal_dong_id] = [];
             comment_info_dong[e.legal_dong_id].push({
                 comment: e.comment,
+                comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
@@ -429,7 +433,7 @@ export async function get_all_level3(req, res)
         if(is_road_t==true){
 
             const [ret_t] = await db.query(
-                `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
                 WHERE c.road_id IS NOT NULL AND c.road_id=?
@@ -444,7 +448,7 @@ export async function get_all_level3(req, res)
         else{
             
             const [ret_t] = await db.query(
-                `SELECT c.content, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
                 WHERE c.legal_dong_id IS NOT NULL AND c.road_id=?
@@ -511,7 +515,7 @@ export async function level4(req, res)   //건물번호 단위
         const holder = address_id_arr.map(i=>'?').join(', ');
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.address_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from (SELECT c.address_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.address_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
@@ -526,6 +530,7 @@ export async function level4(req, res)   //건물번호 단위
             if(!comment_info[e.address_id]) comment_info[e.address_id] = [];
             comment_info[e.address_id].push({
                 comment: e.comment,
+                comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
@@ -564,7 +569,6 @@ export async function level4(req, res)   //건물번호 단위
         console.error("error: ", err);
         res.status(401).json({
             error: "server error"
-
         });
     }
 }
@@ -579,7 +583,7 @@ export async function get_all_level4(req, res)
         const offset_t = parseInt(offset);
 
         const [address_row] = await db.query(
-            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
                 WHERE c.address_id=?
@@ -639,7 +643,7 @@ export async function level5(req, res)   //건물번호 단위
         const holder = address_id_arr.map(i=>'?').join(', ');
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.address_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from (SELECT c.address_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
             (PARTITION BY c.address_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
@@ -654,6 +658,7 @@ export async function level5(req, res)   //건물번호 단위
             if(!comment_info[e.address_id]) comment_info[e.address_id] = [];
             comment_info[e.address_id].push({
                 comment: e.comment,
+                comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count
@@ -699,7 +704,7 @@ export async function get_all_level5(req, res)
         const offset_t = parseInt(offset);
 
         const [address_row] = await db.query(
-            `SELECT c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
                 WHERE c.address_id=?
