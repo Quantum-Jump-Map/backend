@@ -5,6 +5,10 @@ import userRoutes from './routes/users.js';
 import get_commentsRoutes from './routes/get_comments.js';
 import searchRoutes from './routes/search.js';
 import {__init_eventdbsync} from './eventSync/eventSync.js';
+import {Server} from 'socket.io';
+import http from 'http';
+import { registerChatNamespace } from './socket/chat.js';
+
 
 dotenv.config();
 const app = express();
@@ -16,10 +20,17 @@ app.use('/users', userRoutes);  //register, login
 app.use('/get_comments', get_commentsRoutes);  //get comments based on location
 app.use('/search', searchRoutes); //search
 
+const server = http.createServer(app);
+const io = new Server(server);
+
+registerChatNamespace(io);
+
+
+
 __init_eventdbsync();
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
 });
 
