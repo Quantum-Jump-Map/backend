@@ -273,7 +273,7 @@ export async function likeComment(req, res) {
 
     if(like_rows.length ===0)  //좋아요 안눌려있을 때
     {
-      await db.execute("UPDATE comments set like_count = like_count+1 WHERE comment_id = ?", [comment_id]);
+      await db.execute("UPDATE comments set like_count = like_count+1 WHERE id = ?", [comment_id]);
       await db.execute("INSERT INTO comment_likes (comment_id, user_id) VALUES(?,?)", [comment_id, user_id]);
       await userdb.execute('UPDATE users set total_like_count=total_like_count+1 WHERE id=?',[comment_user]);
 
@@ -285,7 +285,7 @@ export async function likeComment(req, res) {
 
     else
     {
-      await db.execute("UPDATE comments set like_count = like_count-1 WHERE comment_id = ?",[comment_id]);
+      await db.execute("UPDATE comments set like_count = like_count-1 WHERE id = ?",[comment_id]);
       await db.execute("DELETE from comment_likes WHERE comment_id=? AND user_id =?", [comment_id, user_id]);
       await userdb.execute('UPDATE users set total_like_count=total_like_count-1 WHERE id=?',[comment_user]);
 
