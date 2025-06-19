@@ -142,3 +142,33 @@ CREATE TABLE IF NOT EXISTS festivals (
   modifiedtime DATETIME NOT NULL,
   telephone TEXT
 );
+
+DROP DATABASE IF EXISTS live_message_db;
+CREATE DATABASE IF NOT EXISTS live_message_db;
+USE live_message_db;
+
+CREATE TABLE IF NOT EXISTS message_room (
+  id INT NOT NULL PRIMARY KEY,   -- 행사일 경우 행사의 content_id 가 room 번호
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  room_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  room_id INT NOT NULL,
+  content TEXT NOT NULL,
+  posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  user_id INT NOT NULL
+  like_counts INT DEFAULT 0,
+  FOREIGN KEY (room_id) REFERENCES message_room(id);
+);
+
+CREATE TABLE IF NOT EXISTS message_likes (
+  id INT AUTO_INCREMENT NOT NULL PRIMARY,
+  room_id INT NOT NULL,
+  message_id INT NOT NULL,
+  liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+)
+
+CREATE INDEX ON live_message_db(room_id, posted_at);
