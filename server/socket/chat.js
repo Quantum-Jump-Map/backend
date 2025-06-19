@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
+import {make_room, insert_message} from './messageAPI';
 
 const secretKey = process.env.JWT_SECRET;
 const timeOut = process.env.JWT_EXPIRES_IN;
 
-export function registerChatNamespace(io) {
+export async function registerChatNamespace(io) {
     
     const chat = io.of('/chat');
 
@@ -41,15 +42,34 @@ export function registerChatNamespace(io) {
 
         socket.emit('newToken', socket.newToken);
 
-        socket.on('joinRoom', (roomId) => {
+        socket.on('joinRoom', async (roomId) => {
+
+            const room_name = await make_room(roomId);
+
             socket.join(roomId);
+
+            socket.emit('room_info', {
+                roomId: roomId,
+                room_name: room_name
+            });
+            
         });
 
-        socket.on('sendMessage', ({roomId, message}) => {
+        socket.on('sendMessage', async ({roomId, message}) => {
+            
+            const res = await insert_message({roomId, message}, socket.user.username);
+
             chat.to(roomId).emit('message', {
                 username: socket.user.username,
-                message: message,
+                message: message, 
+                message_id: res.id,
+                timestamp: res.posted_at
             });
+        });
+
+        socket.on('leaveRoom', (roomId) => {
+            socket.leave(roomId);
+            console.log(`left room: ${socket.user.username}`);
         });
     });
 }

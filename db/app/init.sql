@@ -158,17 +158,20 @@ CREATE TABLE IF NOT EXISTS messages (
   room_id INT NOT NULL,
   content TEXT NOT NULL,
   posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  user_id INT NOT NULL
+  user_id INT NOT NULL,
   like_counts INT DEFAULT 0,
-  FOREIGN KEY (room_id) REFERENCES message_room(id);
+  FOREIGN KEY (room_id) REFERENCES message_room(id)
 );
 
 CREATE TABLE IF NOT EXISTS message_likes (
-  id INT AUTO_INCREMENT NOT NULL PRIMARY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   room_id INT NOT NULL,
   message_id INT NOT NULL,
+  user_id INT NOT NULL,
   liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
 )
 
-CREATE INDEX ON live_message_db(room_id, posted_at);
+CREATE INDEX ON messages(room_id, posted_at);
+CREATE INDEX ON message_likes(room_id, message_id);
+CREATE INDEX ON message_likes(user_id);

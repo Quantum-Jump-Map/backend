@@ -8,6 +8,7 @@ import {__init_eventdbsync} from './eventSync/eventSync.js';
 import {Server} from 'socket.io';
 import http from 'http';
 import { registerChatNamespace } from './socket/chat.js';
+import chatRoutes from './routes/chat.js';
 
 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use('/comments', commentRoutes); //comment post, like, dislike
 app.use('/users', userRoutes);  //register, login
 app.use('/get_comments', get_commentsRoutes);  //get comments based on location
 app.use('/search', searchRoutes); //search
+app.use('/chat', chatRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server);
