@@ -168,8 +168,7 @@ CREATE TABLE IF NOT EXISTS message_likes (
   room_id INT NOT NULL,
   message_id INT NOT NULL,
   user_id INT NOT NULL,
-  liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
+  liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 
 CREATE INDEX ON messages(room_id, posted_at);
