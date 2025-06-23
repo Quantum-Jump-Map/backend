@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import {make_room, insert_message} from './messageAPI';
+import {make_room, insert_message} from './messageAPI.js';
 
 const secretKey = process.env.JWT_SECRET;
 const timeOut = process.env.JWT_EXPIRES_IN;
