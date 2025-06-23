@@ -611,7 +611,9 @@ export async function get_all_level4(req, res)
 
 export async function level5(req, res)   //건물번호 단위
 {
-    const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
+    try{
+    
+        const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
         console.log(req.query);
@@ -693,6 +695,13 @@ export async function level5(req, res)   //건물번호 단위
             data_size: data.length,
             data: data
         });
+
+    }catch (err) {
+        console.log("error: ", err.message);
+        res.status(401).json({
+            error: err.message
+        });
+    }
 }
 
 export async function get_all_level5(req, res)
