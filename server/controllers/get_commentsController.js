@@ -40,7 +40,7 @@ export async function level1(req, res)  // 시도 단위
             LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
             WHERE c.city_id IN (${holder}) ) ranked
             WHERE rn<=2
-            `, [req.user.id]) || [];
+            `, [req.user.id], city_id_arr) || [];
         
         let comment_info = {};
             
