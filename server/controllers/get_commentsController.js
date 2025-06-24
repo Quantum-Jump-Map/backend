@@ -38,7 +38,7 @@ export async function level1(req, res)  // 시도 단위
             JOIN user_db.users u ON c.user_id=u.id
             WHERE c.city_id IN (${holder}) ) ranked
             WHERE rn<=2
-            `, city_id_arr);
+            `, city_id_arr) || [];
         
         let comment_info = {};
             
@@ -270,6 +270,10 @@ export async function level3(req, res)   //도로명+구 단위
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
+        let comment_info = {};
+        let comment_info_dong = {};
+        let data = [];
+
         const [loc] = await db.query(`
             SELECT r.*, d.name AS district_name, c.name AS city_name
             FROM roads r
@@ -296,102 +300,102 @@ export async function level3(req, res)   //도로명+구 단위
             return;
         }
 
-        const road_id_arr = loc.map(c=>c.id);
-        const holder = road_id_arr.map(i=>'?').join(', ');
+        if(loc.length!=0)
+        {
+            const road_id_arr = loc.map(c=>c.id);
+            const holder = road_id_arr.map(i=>'?').join(', ');
 
-        const dong_id_arr = loc_dong.map(c=>c.id);
-        const holder_dong = dong_id_arr.map(i=>'?').join(', ');
+            const [db_res] = await db.query(
+                `SELECT * from (SELECT c.road_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+                (PARTITION BY c.road_id ORDER BY c.like_count DESC) AS rn
+                FROM comments c 
+                JOIN user_db.users u ON c.user_id=u.id
+                WHERE c.road_id IN (${holder}) AND c.road_id IS NOT NULL ) ranked
+                WHERE rn<=2
+                `, road_id_arr);
 
-        const [db_res] = await db.query(
-            `SELECT * from (SELECT c.road_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
-            (PARTITION BY c.road_id ORDER BY c.like_count DESC) AS rn
-            FROM comments c 
-            JOIN user_db.users u ON c.user_id=u.id
-            WHERE c.road_id IN (${holder}) AND c.road_id IS NOT NULL ) ranked
-            WHERE rn<=2
-            `, road_id_arr);
+            for(const e of db_res)
+            {
+                if(!comment_info[e.road_id]) comment_info[e.road_id] = [];
+                comment_info[e.road_id].push({
+                    comment: e.comment,
+                    comment_id: e.comment_id,
+                    posted_by: e.posted_by,
+                    posted_at: e.posted_at,
+                    like_count: e.like_count
+                });
+            }
 
-        const [db_res_dong] = await db.query(
-            `SELECT * FROM (SELECT c.legal_dong_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
-            (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
-            FROM comments c
-            JOIN user_db.users u ON c.user_id=u.id
-            WHERE c.legal_dong_id IN (${holder_dong}) AND c.legal_dong_id IS NOT NULL ) ranked
-            WHERE rn<=2`, dong_id_arr);
+            for(const l of loc)
+            {
+                const comments_temp = comment_info[l.id] || [];
+                if(!comments_temp || comments_temp.length === 0)
+                    continue;
+                
+                data.push({
+                    mapx: l.lng,
+                    mapy: l.lat,
+                    is_road: true,
+                    address: {
+                        city: l.city_name,
+                        district: l.district_name,
+                        legal_dong: null,
+                        road: l.name
+                    },
+                    loc_id: l.id,
+                    comments_size: comments_temp.length,
+                    comments: comments_temp
+                });
+            }
+        }
         
-        let comment_info = {};
-        let comment_info_dong = {};
+
+        if(loc_dong.length!=0)
+        {
+            const dong_id_arr = loc_dong.map(c=>c.id);
+            const holder_dong = dong_id_arr.map(i=>'?').join(', ');
+
+            const [db_res_dong] = await db.query(
+                `SELECT * FROM (SELECT c.legal_dong_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+                (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
+                FROM comments c
+                JOIN user_db.users u ON c.user_id=u.id
+                WHERE c.legal_dong_id IN (${holder_dong}) AND c.legal_dong_id IS NOT NULL ) ranked
+                WHERE rn<=2`, dong_id_arr);
             
-        for(const e of db_res)
-        {
-            if(!comment_info[e.road_id]) comment_info[e.road_id] = [];
-            comment_info[e.road_id].push({
-                comment: e.comment,
-                comment_id: e.comment_id,
-                posted_by: e.posted_by,
-                posted_at: e.posted_at,
-                like_count: e.like_count
-            });
-        }
+            for(const e of db_res_dong)
+            {
+                if(!comment_info_dong[e.legal_dong_id]) comment_info_dong[e.legal_dong_id] = [];
+                comment_info_dong[e.legal_dong_id].push({
+                    comment: e.comment,
+                    comment_id: e.comment_id,
+                    posted_by: e.posted_by,
+                    posted_at: e.posted_at,
+                    like_count: e.like_count
+                });
+            }
 
-        for(const e of db_res_dong)
-        {
-            if(!comment_info_dong[e.legal_dong_id]) comment_info_dong[e.legal_dong_id] = [];
-            comment_info_dong[e.legal_dong_id].push({
-                comment: e.comment,
-                comment_id: e.comment_id,
-                posted_by: e.posted_by,
-                posted_at: e.posted_at,
-                like_count: e.like_count
-            });
-        }
-
-
-
-        let data = [];
-
-        for(const l of loc)
-        {
-            const comments_temp = comment_info[l.id] || [];
-            if(!comments_temp || comments_temp.length === 0)
-                continue;
-            
-            data.push({
-                mapx: l.lng,
-                mapy: l.lat,
-                is_road: true,
-                address: {
-                    city: l.city_name,
-                    district: l.district_name,
-                    legal_dong: null,
-                    road: l.name
-                },
-                loc_id: l.id,
-                comments_size: comments_temp.length,
-                comments: comments_temp
-            });
-        }
-
-        for(const l of loc_dong)
-        {
-            const comments_temp = comment_info_dong[l.id] || [];
-            if(!comments_temp || comments_temp.length === 0)
-                continue;
-            
-            data.push({
-                mapx: l.lng,
-                mapy: l.lat,
-                is_road: false,
-                address: {
-                    city: l.city_name,
-                    district: l.district_name,
-                    legal_dong: l.name,
-                    road: null
-                },
-                loc_id: l.id,
-                comments_size: comments_temp.length,
-                comments: comments_temp
-            });
+            for(const l of loc_dong)
+            {
+                const comments_temp = comment_info_dong[l.id] || [];
+                if(!comments_temp || comments_temp.length === 0)
+                    continue;
+                
+                data.push({
+                    mapx: l.lng,
+                    mapy: l.lat,
+                    is_road: false,
+                    address: {
+                        city: l.city_name,
+                        district: l.district_name,
+                        legal_dong: l.name,
+                        road: null
+                    },
+                    loc_id: l.id,
+                    comments_size: comments_temp.length,
+                    comments: comments_temp
+                });
+            }
         }
 
         res.status(201).json({
