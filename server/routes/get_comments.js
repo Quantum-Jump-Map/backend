@@ -4,11 +4,12 @@ import {
   get_all_level2, get_all_level3, get_all_level4, get_all_level5
 } from '../controllers/get_commentsController.js'; 
 
-//import { CheckAndRemakeToken } from '../JWT/middleware.js';
+import {CheckAndRemakeToken} from '../JWT/middleware.js'
+
 
 const router = express.Router();
 
-router.get('/level1', level1);
+router.get('/level1', CheckAndRemakeToken, level1);
 router.get('/level2', level2);
 router.get('/level3', level3);
 router.get('/level4', level4);

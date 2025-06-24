@@ -7,6 +7,7 @@ export async function level1(req, res)  // 시도 단위
 {
     try{
         const {TopLeftX, TopLeftY, BottomRightX, BottomRightY} = req.query;
+        const user_info = req.user;
 
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
@@ -32,13 +33,14 @@ export async function level1(req, res)  // 시도 단위
         const holder = city_id_arr.map(i=>'?').join(', ');
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.city_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from (SELECT c.city_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
             (PARTITION BY c.city_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
+            LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
             WHERE c.city_id IN (${holder}) ) ranked
             WHERE rn<=2
-            `, city_id_arr) || [];
+            `, [req.user.id]) || [];
         
         let comment_info = {};
             
@@ -50,7 +52,8 @@ export async function level1(req, res)  // 시도 단위
                 comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
-                like_count: e.like_count
+                like_count: e.like_count,
+                comment_liked: e.liked
             });
         }
 
