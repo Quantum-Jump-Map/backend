@@ -267,6 +267,23 @@ export async function likeComment(req, res) {
   const comment_id = id;
 
   try{
+    
+    console.log(`comment_id: ${comment_id} \n user_id: ${user_id}`);
+    
+    const [ret] = await db.query(`
+      SELECT * FROM comments
+      WHERE id=?`, [comment_id]);
+
+      if(ret.length==0)
+      {
+        console.log("error: no comment");
+        return res.status(401).json({
+          error: "no comment"
+        });
+      }
+
+    console.log(`댓글: ${ret[0]?.content}`);
+    
     const [like_rows] = await db.query("SELECT * FROM comment_likes WHERE comment_id=? AND user_id =?", [comment_id, user_id]);
     const [comment_user_rows] = await db.query('SELECT user_id FROM comments WHERE id=?', [comment_id]);
     const comment_user = comment_user_rows[0]?.user_id;
