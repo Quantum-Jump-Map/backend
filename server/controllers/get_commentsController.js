@@ -31,7 +31,7 @@ export async function level1(req, res)  // 시도 단위
 
         const city_id_arr = loc.map(c=>c.id);
         const holder = city_id_arr.map(i=>'?').join(', ');
-        const params = [user_info.id, city_id_arr];
+        const params = [user_info.id, ...city_id_arr];
 
         const [db_res] = await db.query(
             `SELECT * from (SELECT c.city_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
