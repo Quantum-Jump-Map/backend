@@ -289,7 +289,7 @@ export async function level3(req, res)   //도로명+구 단위
             JOIN cities c ON c.id=l.city_id
             WHERE l.lng BETWEEN ? AND ? AND l.lat BETWEEN ? AND ?`,
             [t_topleftx, t_bottomrightx, t_bottomrighty, t_toplefty]
-        )
+        );
 
         if(loc.length==0 && loc_dong.length==0){
             res.status(201).json({
@@ -455,7 +455,7 @@ export async function get_all_level3(req, res)
                 `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
-                WHERE c.legal_dong_id IS NOT NULL AND c.road_id=?
+                WHERE c.legal_dong_id IS NOT NULL AND c.legal_dong_id=?
                 ORDER BY c.created_at DESC
                 LIMIT 10
                 OFFSET ?`, [loc_id_t, offset_t]);
