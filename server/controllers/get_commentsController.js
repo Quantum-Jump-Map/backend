@@ -627,7 +627,7 @@ export async function level5(req, res)   //건물번호 단위
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
 
         const [loc] = await db.query(`
-            SELECT a.*, r.name AS road_name, d.name AS district_name, c.name AS city_name, l.name AS legal_dong_name
+            SELECT a.*, r.name AS road_name, d.name AS district_name, c.name AS city_name, l.name AS legal_dong_name, a.is_road
             FROM addresses a
             LEFT JOIN roads r ON r.id=a.road_id
             LEFT JOIN legal_dongs l ON l.id=a.legal_dong_id
@@ -683,6 +683,7 @@ export async function level5(req, res)   //건물번호 단위
                 mapx: l.lng,
                 mapy: l.lat,
                 address_id: l.id,
+                is_road: l.is_road,
                 address: {
                     city: l.city_name,
                     district: l.district_name,
