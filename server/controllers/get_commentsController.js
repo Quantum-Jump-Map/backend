@@ -54,7 +54,7 @@ export async function level1(req, res)  // 시도 단위
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count,
-                comment_liked: e.liked
+                liked: e.liked
             });
         }
 
@@ -98,18 +98,20 @@ export async function get_all_level1(req, res)
         const {city_id, offset} = req.query;
         const city_id_t = parseInt(city_id);
         const offset_t = parseInt(offset);
+        const user_info = req.user;
 
         console.log(city_id_t);
         console.log(offset_t);
 
         const [city_row] = await db.query(
-            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.city_id=?
                 ORDER BY c.like_count DESC
                 LIMIT 10
-                OFFSET ?`, [city_id_t, offset_t]);
+                OFFSET ?`, [user_info.id, city_id_t, offset_t]);
 
         res.status(201).json({
             data_size: city_row.length,
@@ -136,6 +138,7 @@ export async function level2(req, res)   //시군구 단위
         console.log(`자료형: ${typeof(TopLeftX)} ${typeof(TopLeftY)} ${typeof(BottomRightX)} ${typeof(BottomRightY)}\n`);
         console.log(`값: ${TopLeftX} ${TopLeftY} ${BottomRightX} ${BottomRightY}`);
         console.log(req.query);
+        const user_info = req.user;
 
         const t_topleftx = Math.min(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
@@ -162,14 +165,17 @@ export async function level2(req, res)   //시군구 단위
 
         const district_id_arr = loc.map(c=>c.id);
         const holder = district_id_arr.map(i=>'?').join(', ');
+        const params = [user_info.id, ...district_id_arr];
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.district_id, c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from 
+            (SELECT c.district_id, c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
             (PARTITION BY c.district_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
+            LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
             WHERE c.district_id IN (${holder}) ) ranked
-            WHERE rn<=2`, district_id_arr);
+            WHERE rn<=2`, params);
         
         let comment_info = {};
             
@@ -181,7 +187,8 @@ export async function level2(req, res)   //시군구 단위
                 comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
-                like_count: e.like_count
+                like_count: e.like_count,
+                liked: e.liked
             });
         }
 
@@ -230,18 +237,20 @@ export async function get_all_level2(req, res)
         const {district_id, offset} = req.query;
         const district_id_t = parseInt(district_id);
         const offset_t = parseInt(offset);
+        const user_info = req.user;
 
         console.log(district_id_t);
         console.log(offset_t);
 
         const [district_row] = await db.query(
-            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.district_id=?
                 ORDER BY c.like_count DESC
                 LIMIT 10
-                OFFSET ?`, [district_id_t, offset_t]);
+                OFFSET ?`, [user_info.id, district_id_t, offset_t]);
 
         res.status(201).json({
             data_size: district_row.length,
@@ -273,6 +282,7 @@ export async function level3(req, res)   //도로명+구 단위
         const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const user_info = req.user;
 
         let comment_info = {};
         let comment_info_dong = {};
@@ -308,15 +318,18 @@ export async function level3(req, res)   //도로명+구 단위
         {
             const road_id_arr = loc.map(c=>c.id);
             const holder = road_id_arr.map(i=>'?').join(', ');
+            const params = [user_info.id, ...road_id_arr];
 
             const [db_res] = await db.query(
-                `SELECT * from (SELECT c.road_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+                `SELECT * from 
+                (SELECT c.road_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
                 (PARTITION BY c.road_id ORDER BY c.like_count DESC) AS rn
                 FROM comments c 
                 JOIN user_db.users u ON c.user_id=u.id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.road_id IN (${holder}) AND c.road_id IS NOT NULL ) ranked
                 WHERE rn<=2
-                `, road_id_arr);
+                `, params);
 
             for(const e of db_res)
             {
@@ -326,7 +339,8 @@ export async function level3(req, res)   //도로명+구 단위
                     comment_id: e.comment_id,
                     posted_by: e.posted_by,
                     posted_at: e.posted_at,
-                    like_count: e.like_count
+                    like_count: e.like_count,
+                    liked: e.liked
                 });
             }
 
@@ -358,14 +372,17 @@ export async function level3(req, res)   //도로명+구 단위
         {
             const dong_id_arr = loc_dong.map(c=>c.id);
             const holder_dong = dong_id_arr.map(i=>'?').join(', ');
+            const params = [user_info.id, dong_id_arr];
 
             const [db_res_dong] = await db.query(
-                `SELECT * FROM (SELECT c.legal_dong_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+                `SELECT * FROM '
+                (SELECT c.legal_dong_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
                 (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
                 FROM comments c
                 JOIN user_db.users u ON c.user_id=u.id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.legal_dong_id IN (${holder_dong}) AND c.legal_dong_id IS NOT NULL ) ranked
-                WHERE rn<=2`, dong_id_arr);
+                WHERE rn<=2`, params);
             
             for(const e of db_res_dong)
             {
@@ -375,7 +392,8 @@ export async function level3(req, res)   //도로명+구 단위
                     comment_id: e.comment_id,
                     posted_by: e.posted_by,
                     posted_at: e.posted_at,
-                    like_count: e.like_count
+                    like_count: e.like_count,
+                    liked: e.liked
                 });
             }
 
@@ -419,6 +437,7 @@ export async function get_all_level3(req, res)
 {
     try{
         const {is_road, loc_id, offset} = req.query;
+        const user_info = req.user;
 
         if(!is_road || !loc_id || !offset)
         {
@@ -441,13 +460,14 @@ export async function get_all_level3(req, res)
         if(is_road_t==true){
 
             const [ret_t] = await db.query(
-                `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.road_id IS NOT NULL AND c.road_id=?
                 ORDER BY c.created_at DESC
                 LIMIT 10
-                OFFSET ?`, [loc_id_t, offset_t]);
+                OFFSET ?`, [user_info.id, loc_id_t, offset_t]);
 
             ret = ret_t;
 
@@ -456,13 +476,14 @@ export async function get_all_level3(req, res)
         else{
             
             const [ret_t] = await db.query(
-                `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+                `SELECT c.content, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.legal_dong_id IS NOT NULL AND c.legal_dong_id=?
                 ORDER BY c.created_at DESC
                 LIMIT 10
-                OFFSET ?`, [loc_id_t, offset_t]);
+                OFFSET ?`, [user_info.id, loc_id_t, offset_t]);
 
             ret = ret_t;
         }
@@ -500,6 +521,7 @@ export async function level4(req, res)   //건물번호 단위
         const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const user_info = req.user;
 
         const [loc] = await db.query(`
             SELECT a.*, r.name AS road_name, d.name AS district_name, c.name AS city_name, a.is_road
@@ -521,15 +543,18 @@ export async function level4(req, res)   //건물번호 단위
 
         const address_id_arr = loc.map(c=>c.id);
         const holder = address_id_arr.map(i=>'?').join(', ');
+        const params = [user_info.id, ...address_id_arr];
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.address_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from 
+            (SELECT c.address_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
             (PARTITION BY c.address_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
+            LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
             WHERE c.address_id IN (${holder}) ) ranked
             WHERE rn<=2
-            `, address_id_arr);
+            `, params);
         
         let comment_info = {};
             
@@ -541,7 +566,8 @@ export async function level4(req, res)   //건물번호 단위
                 comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
-                like_count: e.like_count
+                like_count: e.like_count,
+                liked: e.liked
             });
         }
 
@@ -590,15 +616,17 @@ export async function get_all_level4(req, res)
 
         const address_id_t = parseInt(address_id);
         const offset_t = parseInt(offset);
+        const user_info = req.user;
 
         const [address_row] = await db.query(
-            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.address_id=?
                 ORDER BY c.like_count DESC
                 LIMIT 10
-                OFFSET ?`, [address_id_t, offset_t]);
+                OFFSET ?`, [user_info.id, address_id_t, offset_t]);
 
         res.status(201).json({
             data_size: address_row.length,
@@ -630,6 +658,7 @@ export async function level5(req, res)   //건물번호 단위
         const t_toplefty = Math.max(parseFloat(TopLeftY), parseFloat(BottomRightY));
         const t_bottomrightx = Math.max(parseFloat(TopLeftX), parseFloat(BottomRightX));
         const t_bottomrighty = Math.min(parseFloat(TopLeftY), parseFloat(BottomRightY));
+        const user_info = req.user;
 
         const [loc] = await db.query(`
             SELECT a.*, r.name AS road_name, d.name AS district_name, c.name AS city_name, l.name AS legal_dong_name, a.is_road
@@ -652,15 +681,18 @@ export async function level5(req, res)   //건물번호 단위
 
         const address_id_arr = loc.map(c=>c.id);
         const holder = address_id_arr.map(i=>'?').join(', ');
+        const params = [user_info.id, ...address_id_arr];
 
         const [db_res] = await db.query(
-            `SELECT * from (SELECT c.address_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, ROW_NUMBER() OVER
+            `SELECT * from 
+            (SELECT c.address_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
             (PARTITION BY c.address_id ORDER BY c.like_count DESC) AS rn
             FROM comments c 
             JOIN user_db.users u ON c.user_id=u.id
+            LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
             WHERE c.address_id IN (${holder}) ) ranked
             WHERE rn<=2
-            `, address_id_arr);
+            `, params);
         
         let comment_info = {};
             
@@ -672,7 +704,8 @@ export async function level5(req, res)   //건물번호 단위
                 comment_id: e.comment_id,
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
-                like_count: e.like_count
+                like_count: e.like_count,
+                liked: e.liked
             });
         }
 
@@ -718,18 +751,20 @@ export async function get_all_level5(req, res)
 {
     try{
         const {address_id, offset} = req.query;
+        const user_info = req.user;
 
         const address_id_t = parseInt(address_id);
         const offset_t = parseInt(offset);
 
         const [address_row] = await db.query(
-            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count
+            `SELECT c.content AS comment, c.id AS comment_id, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked
                 FROM comments c
                 JOIN user_db.users u ON u.id=c.user_id
+                LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
                 WHERE c.address_id=?
                 ORDER BY c.like_count DESC
                 LIMIT 10
-                OFFSET ?`, [address_id_t, offset_t]);
+                OFFSET ?`, [user_info.id, address_id_t, offset_t]);
 
         res.status(201).json({
             data_size: address_row.length,
