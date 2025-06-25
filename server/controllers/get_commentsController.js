@@ -54,7 +54,7 @@ export async function level1(req, res)  // 시도 단위
                 posted_by: e.posted_by,
                 posted_at: e.posted_at,
                 like_count: e.like_count,
-                liked: e.liked
+                liked: e.liked || false
             });
         }
 
