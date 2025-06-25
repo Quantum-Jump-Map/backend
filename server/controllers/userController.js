@@ -292,7 +292,7 @@ export async function getProfile(req, res){   //사용자 프로필 가져오기
     const user_info = user_rows[0];   //사용자 정보 
 
     const [comments_rows] = await commentdb.query(
-      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy, cl.id as liked,
+      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy, cl.id as liked
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
         LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
