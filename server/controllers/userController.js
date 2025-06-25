@@ -264,6 +264,7 @@ export async function getProfile(req, res){   //사용자 프로필 가져오기
 
   try{
     const {username} = req.query;
+    const sender_info = req.user;
 
     if(!username) //사용자 입력이 없을 때
     {
@@ -291,15 +292,17 @@ export async function getProfile(req, res){   //사용자 프로필 가져오기
     const user_info = user_rows[0];   //사용자 정보 
 
     const [comments_rows] = await commentdb.query(
-      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
+      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy, cl.id as liked,
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
+        LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
         WHERE c.user_id=?
         ORDER BY c.created_at DESC
-        LIMIT 10`, [user_info.id]);
+        LIMIT 10`, [sender_info.id, user_info.id]);
 
     res.status(201).json({
       token: res.locals.newToken,
+      is_self: user_info.id == sender_info.id,
       follower_count: user_info.follower_count,
       followee_count: user_info.followee_count,
       total_like_count: user_info.total_like_count,
@@ -324,6 +327,7 @@ export async function reloadProfile(req, res)
 {
   try{
     const {username, current_offset} = req.query;
+    const sender_info = req.user;
     if(!username)
     {
       console.log("username not defined");
@@ -351,20 +355,22 @@ export async function reloadProfile(req, res)
     const user_info = user_rows[0];
 
     const [comments_rows] = await commentdb.query(
-      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy
+      `SELECT c.content AS comment, c.like_count, c.created_at AS posted_at, a.lat AS mapx, a.lng AS mapy, cl.id AS liked
         FROM comments c
         JOIN app_db.addresses a ON c.address_id=a.id
+        LEFT JOIN comment_likes cl ON cl.comment_id=c.id AND cl.user_id=?
         WHERE c.user_id=?
         ORDER BY c.created_at DESC
         LIMIT 10
         OFFSET ?`,
-    [user_info.id, current_offset_t]);
+    [sender_info.id, user_info.id, current_offset_t]);
 
     res.status(201).json(
       {
         comments_offset: current_offset_t+comments_rows.length,
         comments: comments_rows,
-        token: res.locals.newToken
+        token: res.locals.newToken,
+        is_self: user_info.id == sender_info.id
       }
     );
 
