@@ -372,10 +372,10 @@ export async function level3(req, res)   //도로명+구 단위
         {
             const dong_id_arr = loc_dong.map(c=>c.id);
             const holder_dong = dong_id_arr.map(i=>'?').join(', ');
-            const params = [user_info.id, dong_id_arr];
+            const params = [user_info.id, ...dong_id_arr];
 
             const [db_res_dong] = await db.query(
-                `SELECT * FROM '
+                `SELECT * FROM
                 (SELECT c.legal_dong_id, c.id AS comment_id, c.content AS comment, u.username AS posted_by, c.created_at AS posted_at, c.like_count, cl.id AS liked, ROW_NUMBER() OVER
                 (PARTITION BY c.legal_dong_id ORDER BY c.like_count DESC) AS rn
                 FROM comments c
