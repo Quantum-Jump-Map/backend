@@ -117,6 +117,15 @@ CREATE TABLE IF NOT EXISTS follows (  -- follow table
   followee_id INT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS fcm_tokens (   -- fcm token
+  user_id INT NOT NULL,
+  fcm_token VARCHAR(255) NOT NULL,
+  username VARCHAR(50) NOT NULL,
+
+  FOREIGN KEY (user_id) REFERENCES users.id,
+  PRIMARY KEY (user_id, fcm_tokens)
+);
+
 
 
 DROP DATABASE IF EXISTS event_db;
@@ -142,6 +151,7 @@ CREATE TABLE IF NOT EXISTS festivals (
   modifiedtime DATETIME NOT NULL,
   telephone TEXT
 );
+
 
 DROP DATABASE IF EXISTS live_message_db;
 CREATE DATABASE IF NOT EXISTS live_message_db;

@@ -9,6 +9,7 @@ import {Server} from 'socket.io';
 import http from 'http';
 import { registerChatNamespace } from './socket/chat.js';
 import chatRoutes from './routes/chat.js';
+import fcmRoutes from './routes/fcmtoken.js';
 
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use('/users', userRoutes);  //register, login
 app.use('/get_comments', get_commentsRoutes);  //get comments based on location
 app.use('/search', searchRoutes); //search
 app.use('/chat', chatRoutes);
+app.use('/fcmtoken', fcmRoutes);  //fcm 토큰 관련
 
 const server = http.createServer(app);
 const io = new Server(server);

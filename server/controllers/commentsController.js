@@ -132,13 +132,11 @@ export async function getOrCreateAddress(latitude, longitude) {
       district_id: district_id,
       RoadOrDongId: RoadOrDongId,
       address_id: address_id
-    };
-
-} catch(err) {
+    }
+  } catch(err) {
   
   console.error("error: ", err);
-}
-
+  }
 }
 
 export async function createComment(req, res) {
