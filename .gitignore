@@ -1,2 +1,3 @@
 /server/node_modules
 /server/fcm/service_key.json
+/.env
