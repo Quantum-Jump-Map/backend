@@ -121,8 +121,9 @@ CREATE TABLE IF NOT EXISTS fcm_tokens (   -- fcm token
   user_id INT NOT NULL,
   fcm_token VARCHAR(255) NOT NULL,
   username VARCHAR(50) NOT NULL,
-
+  device_id VARCHAR(255),
   FOREIGN KEY (user_id) REFERENCES users.id,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id, fcm_tokens)
 );
 
