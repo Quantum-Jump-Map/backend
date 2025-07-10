@@ -1,6 +1,7 @@
 import db from '../db/appDb.js';
 import userdb from '../db/userDb.js';
 import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
+import { sendFollow, sendLike } from '../fcm/fcm_send.js';
 
 export async function getOrCreateAddress(latitude, longitude) {
   //1. 좌표를 주소로 변환하기
@@ -261,6 +262,7 @@ export async function editComment(req, res) {
 export async function likeComment(req, res) {
   const {id} = req.body;
   const user_id = req.user.id;
+  const like_username = req.user.username;   //fcm 전달 인자
 
   const comment_id = id;
 
@@ -291,7 +293,7 @@ export async function likeComment(req, res) {
       await db.execute("UPDATE comments set like_count = like_count+1 WHERE id = ?", [comment_id]);
       await db.execute("INSERT INTO comment_likes (comment_id, user_id) VALUES(?,?)", [comment_id, user_id]);
       await userdb.execute('UPDATE users set total_like_count=total_like_count+1 WHERE id=?',[comment_user]);
-
+      await sendLike(ret[0].content, like_username, comment_user);
       res.status(201).json({
         token: res.locals.newToken,
         message: "좋아요 표시 완료"

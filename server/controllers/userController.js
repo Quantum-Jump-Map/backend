@@ -3,6 +3,7 @@ import commentdb from '../db/appDb.js';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { makeToken } from '../JWT/token.js';
+import { sendFollow } from '../fcm/fcm_send.js';
 
 dotenv.config();
 
@@ -234,6 +235,7 @@ export async function followUser(req, res) {  //사용자 팔로우 / 취소
       await db.query('INSERT INTO follows (follower_id, followee_id) VALUES(?,?)', [req.user.id, followee_id]);
       await db.query('UPDATE users SET follower_count=follower_count+1 WHERE id=?', [followee_id]);
       await db.query('UPDATE users SET followee_count=followee_count+1 WHERE id=?', [req.user.id]);
+      await sendFollow(req.user.username, followee_username);
       console.log(`follow done: ${req.user.id} => ${followee_id}`);
       res.status(201).json({
         message: "followed",
