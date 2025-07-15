@@ -1,5 +1,6 @@
 import db from '../db/appDb.js';
 import userdb from '../db/userDb.js';
+import reportdb from '../db/reportDb.js';
 import { CoordToAddress, AddressToCoord } from '../Kakao/restAPI.js';
 import { sendFollow, sendLike } from '../fcm/fcm_send.js';
 
@@ -319,4 +320,42 @@ export async function likeComment(req, res) {
     });
   }
   
+}
+
+
+export async function report_comment(req, res)  //댓글 신고
+{
+  try{
+
+    const rep_data = req.body;
+    const reporter_id = req.user.userId;
+
+    const [ret] = await reportdb.query(`
+      SELECT * FROM report_db
+      WHERE report_entity_type=2 AND report_entity_id=? AND reporter_id=?`,
+    [rep_data.report_entity_id, reporter_id]);
+
+    if(ret.length==0) {   //신고 되어 있는지 확인하기
+      return res.status(401).json({
+        message: 'Already Reported'
+      });
+    }
+
+    await reportdb.execute(`
+      INSERT INTO report_db
+      (reporter_id, report_entity_type, report_entity_id, report_reason, report_details)
+      VALUES(?,?,?,?,?)`,
+      [reporter_id, 2, rep_data.report_entity_id, rep_data.report_reason, rep_data.report_details]);
+
+    return res.status(201).json({
+      message: "Reported"
+    });
+
+  } catch(err) {
+    
+    console.log(err);
+    return res.status(404).json({
+      error: err
+    });
+  }
 }

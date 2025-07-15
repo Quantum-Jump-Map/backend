@@ -2,7 +2,7 @@ import express from 'express';
 import { registerUser, loginUser, editUser, 
     deleteUser, getUser, followUser, getProfile, reloadProfile,
     searchUsers, updateProfileComment, getFollowStatus, getFollowersList,
-    getFollowingList } from '../controllers/userController.js';
+    getFollowingList, report_user } from '../controllers/userController.js';
 import { CheckAndRemakeToken } from '../JWT/middleware.js';
 
 const router = express.Router();
@@ -20,5 +20,6 @@ router.post('/updateProfileComment', CheckAndRemakeToken, updateProfileComment);
 router.get('/getFollowStatus', CheckAndRemakeToken, getFollowStatus);
 router.get('/getFollowersList', CheckAndRemakeToken, getFollowersList);
 router.get('/getFollowingList', CheckAndRemakeToken, getFollowingList);
+router.post('/reportuser', CheckAndRemakeToken, report_user);
 
 export default router;

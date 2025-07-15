@@ -1,4 +1,5 @@
 import db from '../db/userDb.js';
+import reportdb from '../db/reportDb.js';
 import commentdb from '../db/appDb.js';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
@@ -603,3 +604,53 @@ export async function getFollowingList(req, res) {   // 팔로잉 목록 조회 
     });
   }
 }
+
+export async function report_user(req, res)  //사용자 신고
+{
+  try{
+
+    const rep_data = req.body;
+    const reporter_id = req.user.userId;
+
+    const [ret] = await reportdb.query(`
+      SELECT * FROM report_db
+      WHERE report_entity_type=1 AND report_entity_id=? AND reporter_id=?`, 
+    [rep_data.report_entity_id, reporter_id]);
+
+    if(ret.length==0) {   //신고 되어 있는지 확인하기
+      return res.status(401).json({
+        message: 'Already Reported'
+      });
+    }
+
+    const [user_ret] = await db.query(`
+      SELECT * users
+      WHERE id=?`, [rep_data.report_entity_id]);
+
+    if(user_ret.length==0)  //조회된 사용자가 없을 때
+    {
+      console.log("meesage: no user");
+      return res.status(401).json({
+        message: "no user searched"
+      });
+    }
+
+    await reportdb.execute(`
+      INSERT INTO report_db
+      (reporter_id, report_entity_type, report_entity_id, report_reason, report_details)
+      VALUES(?,?,?,?,?)`,
+      [reporter_id, 1, rep_data.report_entity_id, rep_data.report_reason, rep_data.report_details]);
+
+    return res.status(201).json({
+      message: "Reported"
+    });
+
+  } catch(err) {
+    
+    console.log(err);
+    return res.status(404).json({
+      error: err
+    });
+  }
+}
+

@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   like_count INT DEFAULT 0,
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
+  report BOOLEAN DEFAULT 0,
   FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id),
   FOREIGN KEY (legal_dong_id) REFERENCES legal_dongs(id),
@@ -89,6 +90,21 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   FOREIGN KEY (comment_id) REFERENCES comments(id)
 );
 
+
+DROP DATABASE IF NOT EXISTS report_db;
+CREATE DATABASE IF NOT EXISTS report_db;
+use report_db;
+
+CREATE TABLE IF NOT EXISTS report (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_reason INT NOT NULL,   -- 신고 유형 (미정)
+  report_entity_type INT NOT NULL,   -- 신고 유형(댓글, 사용자 등)  1: 사용자 / 2: 댓글  / 3: 대댓글
+  report_entity_id INT NOT NULL,   -- 신고받은 객체 아이디 (사용자, 댓글 ID 등)
+  report_details TEXT NOT NULL,   -- 신고 이유 (신고자 코멘트)
+  reporter_id INT NOT NULL,  -- 신고자 id
+  report_status INT DEFAULT 0, -- 0: 처리 전, 1: 처리 후
+  reported_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 신고 시간
+);
 
 DROP DATABASE IF EXISTS user_db;
 CREATE DATABASE IF NOT EXISTS user_db;
@@ -107,7 +123,8 @@ CREATE TABLE IF NOT EXISTS users (
   followee_count INT DEFAULT 0,
   total_like_count INT DEFAULT 0,
   total_comment_count INT DEFAULT 0,
-  profile_comment VARCHAR(255) DEFAULT ''
+  profile_comment VARCHAR(255) DEFAULT '',
+  report BOOLEAN DEFAULT 0
 );
 
 
@@ -126,7 +143,6 @@ CREATE TABLE IF NOT EXISTS fcm_tokens (   -- fcm token
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id, fcm_tokens)
 );
-
 
 
 DROP DATABASE IF EXISTS event_db;
