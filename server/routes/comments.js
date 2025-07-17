@@ -4,6 +4,7 @@ import {
   deleteComment,
   editComment,
   likeComment,
+  report_comment
 } from '../controllers/commentsController.js';
 
 import { CheckAndRemakeToken } from '../JWT/middleware.js';
@@ -14,6 +15,7 @@ router.post('/createComment', CheckAndRemakeToken, createComment);   // POST 댓
 router.delete('/deleteComment', CheckAndRemakeToken, deleteComment);   // DELETE 댓글 지우기
 router.patch('/editComment', CheckAndRemakeToken, editComment);
 router.post('/likeComment', CheckAndRemakeToken, likeComment);
+router.post('/report_comment', CheckAndRemakeToken, report_comment); //댓글 신고
 
 export default router;
 

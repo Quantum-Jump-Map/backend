@@ -609,8 +609,16 @@ export async function report_user(req, res)  //사용자 신고
 {
   try{
 
+    if(!req.user)
+    {
+      console.log("error: no user");
+      return res.status(401).json({
+        error: "no user"
+      });
+    }
+    
     const rep_data = req.body;
-    const reporter_id = req.user.userId;
+    const reporter_id = req.user.id;
 
     const [ret] = await reportdb.query(`
       SELECT * FROM report_db

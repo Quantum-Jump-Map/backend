@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS comments ( -- 댓글
   like_count INT DEFAULT 0,
   lat DOUBLE NOT NULL,
   lng DOUBLE NOT NULL,
+  comments2_count INT DEFAULT 0,
   report BOOLEAN DEFAULT 0,
   FOREIGN KEY (city_id) REFERENCES cities(id),
   FOREIGN KEY (district_id) REFERENCES districts(id),
@@ -88,6 +89,26 @@ CREATE TABLE IF NOT EXISTS comment_likes (  -- 댓글 좋아요
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (comment_id, user_id),
   FOREIGN KEY (comment_id) REFERENCES comments(id)
+);
+
+CREATE TABLE IF NOT EXISTS comments2 (   -- 대댓글
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  comment_id INT NOT NULL,
+  user_id INT NOT NULL,
+  content TEXT NOT NULL,
+  is_anonymous BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  like_count INT DEFAULT 0,
+  report BOOLEAN DEFAULT 0,
+  FOREIGN KEY (comment_id) REFERENCES comments(id)
+);
+
+CREATE TABLE IF NOT EXISTS comment2_likes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  comments2_id INT NOT NULL,
+  user_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (comments2_id) REFERENCES comments2(id);
 );
 
 

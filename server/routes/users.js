@@ -20,6 +20,6 @@ router.post('/updateProfileComment', CheckAndRemakeToken, updateProfileComment);
 router.get('/getFollowStatus', CheckAndRemakeToken, getFollowStatus);
 router.get('/getFollowersList', CheckAndRemakeToken, getFollowersList);
 router.get('/getFollowingList', CheckAndRemakeToken, getFollowingList);
-router.post('/reportuser', CheckAndRemakeToken, report_user);
+router.post('/reportuser', CheckAndRemakeToken, report_user);  //사용자 신고
 
 export default router;
