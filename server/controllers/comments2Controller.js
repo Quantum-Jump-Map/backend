@@ -29,7 +29,7 @@ export async function createComment(req, res){
 
         await Db.execute(`     
             INSERT INTO comments2
-            (comment_id, user_id, content,) VALUES(?,?,?)`,
+            (comment_id, user_id, content) VALUES(?,?,?)`,
             [comment_id_int, user.id, comment2]);   //대댓글 등록
 
         await Db.execute(`
@@ -182,7 +182,7 @@ export async function editComment(req, res)
         }
 
         await Db.execute(`
-            UPDATE comments
+            UPDATE comments2
             SET content=?
             WHERE id=?`, [comment2, comment2_id_int]);
 
@@ -215,7 +215,7 @@ export async function likeComment(req, res)
         }
 
         const {comment2_id} = req.body;
-        const user = req.body;
+        const user = req.user;
         
 
         if(!comment2_id)  //body 내용이 없을 때
@@ -270,7 +270,7 @@ export async function likeComment(req, res)
             await userDb.execute(`
                 UPDATE users
                 SET total_like_count=total_like_count-1
-                WHERE id=?`, [ret.user_id]);  //전체 좋아요수 취소 반영
+                WHERE id=?`, [ret[0].user_id]);  //전체 좋아요수 취소 반영
 
             console.log("좋아요 취소 완료");
             return res.status(201).json({
@@ -292,7 +292,7 @@ export async function likeComment(req, res)
             await userDb.execute(`
                 UPDATE users
                 SET total_like_count=total_like_count+1
-                WHERE id=?`, [ret.user_id]);  //전체 좋아요수 반영
+                WHERE id=?`, [ret[0].user_id]);  //전체 좋아요수 반영
 
             console.log("좋아요 완료");
             return res.status(201).json({

@@ -108,11 +108,11 @@ CREATE TABLE IF NOT EXISTS comment2_likes (
   comments2_id INT NOT NULL,
   user_id INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (comments2_id) REFERENCES comments2(id);
+  FOREIGN KEY (comments2_id) REFERENCES comments2(id)
 );
 
 
-DROP DATABASE IF NOT EXISTS report_db;
+DROP DATABASE IF EXISTS report_db;
 CREATE DATABASE IF NOT EXISTS report_db;
 use report_db;
 
@@ -160,9 +160,9 @@ CREATE TABLE IF NOT EXISTS fcm_tokens (   -- fcm token
   fcm_token VARCHAR(255) NOT NULL,
   username VARCHAR(50) NOT NULL,
   device_id VARCHAR(255),
-  FOREIGN KEY (user_id) REFERENCES users.id,
+  FOREIGN KEY (user_id) REFERENCES users(id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (user_id, fcm_tokens)
+  PRIMARY KEY (user_id, fcm_token)
 );
 
 
@@ -219,6 +219,4 @@ CREATE TABLE IF NOT EXISTS message_likes (
   liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX ON messages(room_id, posted_at);
-CREATE INDEX ON message_likes(room_id, message_id);
-CREATE INDEX ON message_likes(user_id);
+
